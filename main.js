@@ -22,7 +22,7 @@ const langFr = document.querySelector("#langFr");
 const langEn = document.querySelector("#langEn");
 
 const state = {
-  lang: bootParams.get("lang") === "en" ? "en" : "fr",
+  lang: (bootParams.get("lang") === "en" || /\/en(\/|$|\?)/.test(document.referrer || "")) ? "en" : "fr",
   explode: 0,
   targetExplode: 0,
   selected: null,

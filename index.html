@@ -310,6 +310,25 @@
       <aside class="card" id="card"></aside>
     </div>
   </div>
-  <script src="./app.js"></script>
+  <script>
+    (function () {
+      var lang = new URLSearchParams(location.search).get("lang");
+      if (lang !== "en" && /\/en(\/|$|\?)/.test(document.referrer || "")) lang = "en";
+      if (lang !== "en") return;
+      document.documentElement.lang = "en";
+      var map = {
+        subtitle: "Diagram · 40 parts",
+        explodeLabel: "Exploded",
+        toggleExplode: "Explode",
+        toggleCut: "Cutaway",
+        boot: "Loading engine…"
+      };
+      Object.keys(map).forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = map[id];
+      });
+    })();
+  </script>
+  <script src="./app.js?v=en2"></script>
 </body>
 </html>
