@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gabarit article — Auto Repare</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #171714;
+      --paper: #f4f0e8;
+      --red: #c24a1c;
+      --muted: #5e5a53;
+      --line: #d9d1c4;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Source Serif 4", Georgia, serif;
+    }
+    a { color: inherit; }
+    .chrome {
+      height: 52px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 0 22px;
+      background: #121210;
+      color: #f0ede7;
+      font-family: "Barlow Condensed", sans-serif;
+    }
+    .brand { font-weight: 800; letter-spacing: .14em; text-decoration: none; font-size: 18px; }
+    .brand em { color: var(--red); font-style: normal; }
+    .chrome nav { display: flex; gap: 16px; margin-left: auto; overflow: auto; }
+    .chrome nav a { color: #c9c3b8; text-decoration: none; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+    .chrome nav a:hover { color: #fff; }
+
+    .mast {
+      padding: 56px 0 36px;
+      border-bottom: 1px solid var(--line);
+    }
+    .wrap { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+    .kicker { font: 700 12px "Barlow Condensed"; letter-spacing: .18em; text-transform: uppercase; color: var(--red); }
+    h1 {
+      font: 800 clamp(42px, 6.4vw, 68px)/0.9 "Barlow Condensed";
+      text-transform: uppercase;
+      letter-spacing: -.03em;
+      margin: 12px 0 18px;
+      max-width: 18ch;
+      text-wrap: balance;
+    }
+    .dek { font-size: 22px; line-height: 1.35; max-width: 38ch; color: var(--muted); }
+    .by { margin-top: 22px; font-size: 14px; color: var(--muted); }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 48px;
+      padding: 40px 0 80px;
+    }
+    .toc { position: sticky; top: 24px; align-self: start; }
+    .toc p {
+      font: 700 11px "Barlow Condensed";
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin: 0 0 10px;
+    }
+    .toc a {
+      display: block;
+      text-decoration: none;
+      font-size: 14px;
+      line-height: 1.35;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+    }
+    .toc a:hover { color: var(--ink); }
+
+    .prose { max-width: 66ch; font-size: 19px; line-height: 1.55; }
+    .prose h2 {
+      font: 800 34px/1.05 "Barlow Condensed";
+      text-transform: uppercase;
+      letter-spacing: -.02em;
+      margin: 42px 0 14px;
+    }
+    .prose p { margin: 0 0 16px; }
+    .prose ul { margin: 0 0 18px; padding-left: 1.1em; }
+    .prose li { margin: 0 0 8px; }
+    .ess {
+      background: #121210;
+      color: #f0ede7;
+      padding: 22px 24px;
+      margin: 0 0 32px;
+    }
+    .ess b {
+      display: block;
+      font: 700 11px "Barlow Condensed";
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: #d9dd93;
+      margin-bottom: 10px;
+    }
+    .pull {
+      font-size: 28px;
+      line-height: 1.2;
+      font-weight: 600;
+      margin: 32px 0;
+      padding-left: 18px;
+      border-left: 4px solid var(--red);
+      max-width: 22ch;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 16px; margin: 8px 0 24px; }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font: 700 11px "Barlow Condensed"; letter-spacing: .1em; text-transform: uppercase; color: var(--red); }
+    .src {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 36px;
+    }
+
+    .related { border-top: 1px solid var(--line); padding: 48px 0 80px; }
+    .related h2 { font: 800 42px/1 "Barlow Condensed"; text-transform: uppercase; margin: 0 0 22px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+    .grid a { text-decoration: none; display: block; padding-top: 14px; border-top: 2px solid var(--ink); }
+    .grid small { font: 700 11px "Barlow Condensed"; letter-spacing: .14em; text-transform: uppercase; color: var(--red); }
+    .grid strong { display: block; margin-top: 8px; font-size: 22px; line-height: 1.15; font-weight: 600; }
+
+    footer {
+      background: #121210;
+      color: #c9c3b8;
+      padding: 22px;
+      font-family: "Barlow Condensed", sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-size: 13px;
+      display: flex;
+      gap: 18px;
+    }
+    @media (max-width: 860px) {
+      .layout, .grid { grid-template-columns: 1fr; }
+      .toc { position: static; }
+      .chrome nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="chrome">
+    <a class="brand" href="./b-moteur-full-bleed.html">AUTO<em>·</em>REPARE</a>
+    <nav>
+      <a href="./b-moteur-full-bleed.html">Moteur 3D</a>
+      <a href="https://auto-repare.com/quiz-technique/">Quiz</a>
+      <a href="https://auto-repare.com/depannage-pieces-detachees/">Dépannage</a>
+      <a href="https://auto-repare.com/contactez-nous/">Contact</a>
+    </nav>
+  </header>
+
+  <header class="mast">
+    <div class="wrap">
+      <div class="kicker">Dépannage · pièces détachées</div>
+      <h1>Liquide de refroidissement noir : causes possibles et risques pour le moteur</h1>
+      <p class="dek">Un liquide sain est vif et limpide. Noir, c’est une contamination — pas une teinte « un peu sale ».</p>
+      <p class="by">Julien · 24 février 2026 · Gabarit article (maquette) · <a href="https://auto-repare.com/liquide-de-refroidissement-noir-causes-possibles-et-risques-pour-le-moteur/">voir le live</a></p>
+    </div>
+  </header>
+
+  <div class="wrap layout">
+    <aside class="toc">
+      <p>Dans cet article</p>
+      <a href="#causes">Causes</a>
+      <a href="#dangers">Dangers et symptômes</a>
+      <a href="#diag">Diagnostic pas à pas</a>
+      <a href="#solutions">Rinçage et réparations</a>
+      <a href="#prevent">Entretien préventif</a>
+    </aside>
+
+    <article class="prose">
+      <div class="ess">
+        <b>En bref</b>
+        Un liquide noir signale presque toujours une contamination (huile, corrosion, boues). Inspection visuelle, test CO₂, mise en pression — puis réparer la cause avant de rincer. Liquide noir huileux : ne pas continuer à rouler.
+      </div>
+
+      <h2 id="causes">Causes et solutions</h2>
+      <p>Un LDR sain est rose, jaune, vert ou bleu, et reste limpide. Le noir révèle un souci interne. Chaque cause a sa réparation : changer le liquide sans traiter la fuite ne sert à rien.</p>
+      <p>La piste la plus grave est l’huile dans le circuit : joint de culasse, ou échangeur huile/eau poreux (l’article cite certains 1.6 HDi). Film irisé, aspect huileux, parfois une mayonnaise. L’huile tue les additifs, épaissit le fluide, bouche radiateur, thermostat, pompe.</p>
+      <p>Sans huile, ça peut être de la corrosion, des durites qui se délitent, un mélange de familles de LDR (OAT / HOAT / IAT) ou un liquide trop vieux. L’intervalle exact reste celui du constructeur.</p>
+
+      <p class="pull">Sans traiter la cause, un simple changement de liquide ne sert à rien.</p>
+
+      <h2 id="dangers">Dangers et symptômes</h2>
+      <p>Surchauffe, ventilateur qui s’emballe, niveau qui baisse sans fuite au sol, mousse dans le vase, odeur sucrée. Rouler avec un liquide noir huileux, c’est risquer de gripper la pompe et de voiler la culasse.</p>
+      <table>
+        <thead><tr><th>Composant</th><th>Dommage</th><th>Ordre cité dans l’article</th></tr></thead>
+        <tbody>
+          <tr><td>Joint de culasse</td><td>Perte d’étanchéité</td><td>800–1 500 €, parfois &gt; 3 000 €</td></tr>
+          <tr><td>Pompe à eau</td><td>Usure, grippage</td><td>150–400 €</td></tr>
+          <tr><td>Échangeur huile/eau</td><td>Contamination croisée</td><td>300–800 €</td></tr>
+        </tbody>
+      </table>
+      <p>Ce sont des fourchettes de l’article, pièces + main-d’œuvre — pas un devis.</p>
+
+      <h2 id="diag">Diagnostic pas à pas</h2>
+      <ul>
+        <li>Moteur froid. Jamais le bouchon à chaud.</li>
+        <li>Vase et bouchon : couleur, film, mayonnaise, niveau.</li>
+        <li>Test CO₂ (gaz de combustion dans le LDR) et mise en pression du circuit.</li>
+        <li>Valider avant d’ouvrir le moteur.</li>
+      </ul>
+
+      <h2 id="solutions">Rinçage et réparations</h2>
+      <p>Réparer (joint, échangeur, durites), puis double rinçage, puis le LDR du carnet. Pas un mélange improvisé.</p>
+
+      <h2 id="prevent">Entretien préventif</h2>
+      <p>Contrôle visuel à peu près tous les six mois. Vidange souvent tous les 2 à 4 ans — le carnet tranche. Durites fatiguées : les changer avant qu’elles noircissent le circuit.</p>
+      <p class="src">Texte calé sur l’article live. Gabarit uniquement : pas d’outil 3D ici. Le moteur reste sur la home.</p>
+    </article>
+  </div>
+
+  <section class="related">
+    <div class="wrap">
+      <h2>À lire ensuite</h2>
+      <div class="grid">
+        <a href="https://auto-repare.com/fumee-noire-sur-diesel-diagnostic-rapide-avant-dabimer-turbo-et-fap/">
+          <small>Diesel</small>
+          <strong>Fumée noire : avant d’abîmer turbo et FAP</strong>
+        </a>
+        <a href="https://auto-repare.com/aiguille-de-temperature-moteur-qui-ne-monte-pas-thermostat-sonde-ou-conduite-trop-courte/">
+          <small>Température</small>
+          <strong>Aiguille qui ne monte pas : thermostat, sonde, trajet court</strong>
+        </a>
+        <a href="https://auto-repare.com/bruit-de-tracteur-au-demarrage-les-causes-typiques-et-les-signes-qui-inquietent/">
+          <small>Démarrage</small>
+          <strong>Bruit de tracteur au démarrage</strong>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Maquette gabarit article</span>
+    <a href="./b-moteur-full-bleed.html">Home B</a>
+    <a href="https://auto-repare.com/mentions-legales/">Mentions légales</a>
+  </footer>
+</body>
+</html>
