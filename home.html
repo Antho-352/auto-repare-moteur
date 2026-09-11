@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Auto-Repare — Comprendre son moteur</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --ink:#1d1c1a; --muted:#6d6860; --line:#ddd6cb; --bg:#f6f3ee; --accent:#9c3d18; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "IBM Plex Sans", sans-serif; background: var(--bg); color: var(--ink); }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 28px 20px 80px; }
+    nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 36px; font-size: 13px; letter-spacing: 0.12em; font-weight: 700; }
+    nav span { color: var(--muted); font-weight: 500; letter-spacing: 0; }
+    h1 { font-size: clamp(32px, 5vw, 52px); line-height: 1.05; max-width: 16ch; text-wrap: pretty; }
+    .lead { margin: 16px 0 28px; max-width: 52ch; color: var(--muted); font-size: 17px; line-height: 1.5; }
+    .stage {
+      height: min(72vh, 720px);
+      min-height: 520px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+      background: #ece8e1;
+    }
+    .stage iframe { width: 100%; height: 100%; border: 0; }
+    .note { margin-top: 14px; font-size: 13px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav><b>AUTO-REPARE</b><span>Schéma moteur · v2</span></nav>
+    <h1>Où est la bougie. À quoi sert la courroie.</h1>
+    <p class="lead">Cliquez une pièce. Ce n’est pas un moteur de modèle précis : un 4 cylindres essence pour comprendre avant de lire la fiche.</p>
+    <div class="stage">
+      <iframe title="Moteur 4 cylindres" src="./index.html?embed=1"></iframe>
+    </div>
+    <p class="note">Intégration type homepage : le module tient dans un cadre. Plus tard, la même iframe (ou le même composant Astro) ira sur auto-repare.com.</p>
+  </div>
+</body>
+</html>

@@ -9,18 +9,23 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #10100e;
-      --bg-2: #181714;
-      --panel: #1e1c18;
-      --ink: #f3efe4;
-      --muted: #9b9588;
-      --line: #2e2b26;
-      --accent: #e3a03a;
-      --accent-ink: #1a1408;
-      --hot: #c45a32;
-      --ok: #7a9458;
-      --focus: #f0d9a0;
+      --bg: #ece8e1;
+      --bg-2: #f6f3ee;
+      --panel: #fffcf7;
+      --ink: #1d1c1a;
+      --muted: #6d6860;
+      --line: #ddd6cb;
+      --accent: #9c3d18;
+      --accent-ink: #fffaf4;
+      --hot: #9c3d18;
+      --ok: #4d6a3e;
+      --focus: #9c3d18;
     }
+    html, body { height: 100%; background: var(--bg); color: var(--ink); }
+    html.embed, html.embed body { background: transparent; height: 100%; }
+    html.embed .app { height: 100%; min-height: 520px; }
+    html.embed header .brand { display: none; }
+    html.embed .hint { display: none; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; background: var(--bg); color: var(--ink); }
     body {
@@ -165,8 +170,8 @@
       align-items: baseline;
       font-size: 13px;
     }
-    .part:hover { background: #2a2722; }
-    .part[aria-current="true"] { background: #32291c; color: var(--accent); }
+    .part:hover { background: #f0ebe3; }
+    .part[aria-current="true"] { background: #f3e6d8; color: var(--accent); }
     .part .n {
       font-family: "IBM Plex Mono", monospace;
       font-size: 10px;
@@ -177,7 +182,7 @@
       position: relative;
       min-width: 0;
       background:
-        radial-gradient(1200px 500px at 50% 15%, #2a2418 0%, transparent 55%),
+        radial-gradient(900px 420px at 50% 18%, #f7f2e8 0%, transparent 60%),
         var(--bg);
     }
     #view canvas { display: block; width: 100%; height: 100%; }
@@ -261,8 +266,7 @@
           <span id="explodeLabel">Éclaté</span>
           <input id="explode" type="range" min="0" max="100" value="0" />
         </label>
-        <button class="btn" id="toggleExplode" type="button">Exploser</button>
-        <button class="btn" id="readBtn" type="button">Lire</button>
+        <button class="btn" id="toggleExplode" type="button">Éclater</button>
         <div class="lang" role="group" aria-label="Langue">
           <button type="button" id="langFr" aria-pressed="true">FR</button>
           <button type="button" id="langEn" aria-pressed="false">EN</button>

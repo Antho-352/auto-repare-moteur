@@ -13,36 +13,36 @@ export const GROUPS = {
 
 export const UI = {
   fr: {
-    hint: "Clique une pièce · glisse pour tourner · molette pour zoomer",
+    hint: "Cliquez une pièce · glissez pour tourner",
     explode: "Éclaté",
-    explodeBtn: "Exploser",
+    explodeBtn: "Éclater",
     assembleBtn: "Remonter",
-    read: "Lire",
-    filter: "Filtrer une pièce…",
-    emptyTitle: "Moteur 4 cylindres",
-    emptyAka: "Vue pédagogique · essence, soupapes en tête",
+    filter: "Rechercher une pièce…",
+    emptyTitle: "Moteur 4 cylindres en ligne",
+    emptyAka: "Schéma pédagogique · essence",
     empty:
-      "Ce n’est pas un moteur d’un modèle précis. C’est un 4 cylindres en ligne pour montrer où sont les pièces et à quoi elles servent. Pousse l’éclaté pour voir l’intérieur (pistons, bielles, vilebrequin, soupapes).",
-    role: "Rôle",
-    where: "Où c’est",
-    symptom: "Si ça cloche",
-    subtitle: "Moteur 4 cylindres · 40 pièces",
+      "Ce n’est pas le moteur d’un modèle précis (ni une Clio, ni une 208). C’est un 4 cylindres en ligne essence, 8 soupapes, injection indirecte, pour situer les pièces. Le turbo n’existe que sur les versions suralimentées. L’éclaté montre l’intérieur : pistons, bielles, vilebrequin, soupapes.",
+    role: "À quoi ça sert",
+    where: "Où ça se trouve",
+    symptom: "Signes fréquents",
+    note: "Les symptômes aident à comprendre, ce n’est pas un diagnostic. L’intervalle exact est celui du constructeur.",
+    subtitle: "Schéma · 40 organes",
   },
   en: {
-    hint: "Click a part · drag to orbit · scroll to zoom",
-    explode: "Explode",
+    hint: "Click a part · drag to rotate",
+    explode: "Exploded",
     explodeBtn: "Explode",
     assembleBtn: "Assemble",
-    read: "Read",
-    filter: "Filter parts…",
+    filter: "Search a part…",
     emptyTitle: "Inline-four engine",
-    emptyAka: "Teaching model · petrol, overhead valves",
+    emptyAka: "Teaching diagram · petrol",
     empty:
-      "Not a specific car engine. An inline-four so you can see where parts sit and what they do. Push the explode slider to reveal the inside (pistons, rods, crank, valves).",
+      "Not a specific car engine. An inline-four petrol, 8 valves, port injection, to show where parts sit. The turbo is only on boosted versions. Exploded view shows the inside: pistons, rods, crank, valves.",
     role: "What it does",
-    where: "Where it is",
-    symptom: "If it fails",
-    subtitle: "Inline-four engine · 40 parts",
+    where: "Where it sits",
+    symptom: "Common signs",
+    note: "Symptoms help you understand; they are not a diagnosis. Service intervals are the manufacturer’s.",
+    subtitle: "Diagram · 40 parts",
   },
 };
 
@@ -72,10 +72,10 @@ export const PARTS = [
     explode: [0, 1.25, 0],
     fr: {
       name: "Culasse",
-      aka: "Chapeau du moteur",
-      role: "Ferme le haut des cylindres. Loge les chambres de combustion, les soupapes, souvent l’arbre à cames.",
+      aka: "Culasse",
+      role: "Ferme le haut des cylindres. Elle porte les chambres de combustion, les soupapes et, sur ce schéma, l’arbre à cames (simple arbre en tête).",
       where: "Boulonnée sur le dessus du bloc, séparée par le joint de culasse.",
-      symptom: "Joint HS ou culasse voilée après surchauffe : fumée blanche, mayonnaise dans l’huile, ralenti instable.",
+      symptom: "Joint HS ou culasse voilée après surchauffe : fumée blanche, émulsion (aspect mayonnaise) dans l’huile ou le vase, ralenti instable. D’autres causes existent (échangeur huile/eau, etc.).",
     },
     en: {
       name: "Cylinder head",
@@ -91,8 +91,8 @@ export const PARTS = [
     explode: [0, 0.55, 1.05],
     fr: {
       name: "Joint de culasse",
-      aka: "Joint de tête",
-      role: "Étanche la combustion, l’eau et l’huile entre bloc et culasse. Une feuille, un rôle critique.",
+      aka: "Joint de culasse",
+      role: "Assure l’étanchéité (combustion, liquide de refroidissement, huile) entre le bloc et la culasse. Souvent en acier multicouche sur les moteurs récents.",
       where: "Sandwich plat entre le bloc et la culasse.",
       symptom: "Surchauffe, gaz dans le vase d’expansion, perte de puissance. À ne pas « laisser courir ».",
     },
@@ -189,7 +189,7 @@ export const PARTS = [
       aka: "4 bielles",
       role: "Relient chaque piston au vilebrequin. Transforment le va-et-vient en rotation.",
       where: "Entre le pied de piston (axe) et un maneton du vilebrequin.",
-      symptom: "Coussinet fuité : claquement sourd qui grossit, pression d’huile basse. Arrêt immédiat.",
+      symptom: "Coussinet de bielle endommagé : claquement sourd qui s’amplifie, pression d’huile basse. Il faut s’arrêter, ce n’est pas un bruit à « surveiller ».",
     },
     en: {
       name: "Connecting rods",
@@ -225,7 +225,7 @@ export const PARTS = [
     fr: {
       name: "Volant moteur",
       aka: "Volant d’inertie",
-      role: "Masse qui lisse les à-coups des 4 temps. Couronne dentée pour le démarreur. Face d’embrayage.",
+      role: "Masse qui lisse les à-coups des 4 temps. Couronne dentée pour le démarreur. Sur une boîte manuelle, une face reçoit l’embrayage. Sur une automatique, on trouve plutôt un plateau (flexplate).",
       where: "Bout du vilebrequin, côté boîte de vitesses.",
       symptom: "Vibrations à l’embrayage (volant bimasse fatigué), ou denture râpée : démarreur qui crisse.",
     },
@@ -377,7 +377,7 @@ export const PARTS = [
     fr: {
       name: "Pompe à huile",
       aka: "Pompe de lubrification",
-      role: "Aspire l’huile du carter et la pousse vers paliers, cames, turbo. Sans pression, le moteur meurt en secondes.",
+      role: "Aspire l’huile du carter et alimente les paliers, l’équipage mobile et, s’il y en a un, le turbo. Sans pression d’huile, le moteur se détruit en très peu de temps.",
       where: "Bas moteur, souvent entraînée par le vilebrequin.",
       symptom: "Manomètre à zéro, voyant rouge : on coupe, on ne « rentre pas à la maison ».",
     },
@@ -414,8 +414,8 @@ export const PARTS = [
     explode: [0.95, 0.85, 0.85],
     fr: {
       name: "Jauge d’huile",
-      aka: "Bayonnette",
-      role: "Mesure le niveau à froid, à plat. Entre min et max. Ce n’est pas un ornement.",
+      aka: "Jauge à huile",
+      role: "Permet de lire le niveau, moteur froid, voiture à plat, entre les repères min et max.",
       where: "Tube collé au bloc, poignée souvent jaune ou orange.",
       symptom: "Niveau sous min : claquement, casse. Au-dessus de max : fumée bleue, catalyseur en danger.",
     },
@@ -436,7 +436,7 @@ export const PARTS = [
       aka: "4 bougies",
       role: "Étincelle qui enflamme le mélange. Sans elles le moteur tourne au démarreur mais ne part pas.",
       where: "Vissées dans la culasse, une par cylindre, sous les bobines ici.",
-      symptom: "Ratés à froid, conso, voyant moteur. Intervalle 60–100 000 km selon iridium ou cuivre.",
+      symptom: "Ratés à froid, ralenti irrégulier, voyant moteur. L’intervalle dépend du type de bougie (cuivre, platine, iridium) et du carnet constructeur — il n’y a pas un kilométrage unique.",
     },
     en: {
       name: "Spark plugs",
@@ -472,7 +472,7 @@ export const PARTS = [
     fr: {
       name: "Injecteurs",
       aka: "4 injecteurs",
-      role: "Pulvérisent l’essence dans l’admission (ici : injection indirecte). Dose et timing gérés par le calculateur.",
+      role: "Pulvérisent l’essence. Sur ce schéma : injection indirecte (dans l’admission). Beaucoup de moteurs récents injectent directement dans le cylindre.",
       where: "Sous la rampe, visés vers les conduits d’admission.",
       symptom: "Ralenti instable, fumée, un cylindre plus froid. Encrassement ou fuite au joint.",
     },
@@ -567,8 +567,8 @@ export const PARTS = [
     fr: {
       name: "Sonde lambda",
       aka: "Sonde à oxygène",
-      role: "Mesure l’oxygène dans les gaz. Le calculateur ajuste richesse là-dessus.",
-      where: "Vissée dans le collecteur ou juste après, avant catalyseur.",
+      role: "Mesure l’oxygène restant dans les gaz. Le calculateur s’en sert pour corriger la richesse. Il y a souvent une sonde avant catalyseur, parfois une seconde après.",
+      where: "Dans le collecteur, la descente, ou juste avant le catalyseur — selon le moteur.",
       symptom: "Conso en hausse, voyant moteur, ralenti pauvre. Une sonde lente se change, on ne la « recale » pas.",
     },
     en: {
@@ -586,9 +586,9 @@ export const PARTS = [
     fr: {
       name: "Turbocompresseur",
       aka: "Turbo",
-      role: "Les gaz font tourner une turbine, qui comprime l’air d’admission. Plus d’air, plus de couple. Présent sur beaucoup de 4 cylindres récents.",
-      where: "En sortie de collecteur d’échappement, avec une durite d’huile et souvent d’eau.",
-      symptom: "Sifflement, fumée bleue, manque de souffle. Huile cokéfiée ou axe en jeu. Laisse tourner 30 s avant de couper à chaud.",
+      role: "Uniquement sur les versions suralimentées. Les gaz font tourner une turbine, qui comprime l’air d’admission : plus d’air, plus de couple.",
+      where: "En sortie de collecteur d’échappement, avec une alimentation d’huile et souvent de liquide de refroidissement.",
+      symptom: "Manque de souffle, sifflement inhabituel, fumée bleue. Axe en jeu ou huile cokéfiée. Un ralenti de quelques secondes après un trajet chargé reste une précaution, pas une règle universelle.",
     },
     en: {
       name: "Turbocharger",
@@ -605,7 +605,7 @@ export const PARTS = [
     fr: {
       name: "Pompe à eau",
       aka: "Pompe de LDR",
-      role: "Fait circuler le liquide de refroidissement dans bloc, culasse, radiateur. Souvent entraînée par la courroie de distro : on la change dans le même kit.",
+      role: "Fait circuler le liquide de refroidissement dans le bloc, la culasse et le radiateur. Selon les moteurs, elle est entraînée par la courroie de distribution, la courroie d’accessoires, ou elle est électrique.",
       where: "Côté distribution, sur le bloc.",
       symptom: "Surchauffe, fuite par le trou de « weep », bruit de roulement. Pas de rustine.",
     },
@@ -624,7 +624,7 @@ export const PARTS = [
     fr: {
       name: "Thermostat",
       aka: "Calorstat",
-      role: "Reste fermé à froid pour chauffer vite, s’ouvre pour envoyer l’eau au radiateur. Température de régime ~90 °C.",
+      role: "Reste fermé à froid pour que le moteur monte en température, puis s’ouvre vers le radiateur. La température de régime se situe souvent autour de 90 °C, pas sur tous les moteurs.",
       where: "Boîtier en sortie de culasse, avant la durite haute.",
       symptom: "Bloqué fermé : aiguille dans le rouge. Bloqué ouvert : jamais de chauffage, conso, thermostat à changer.",
     },

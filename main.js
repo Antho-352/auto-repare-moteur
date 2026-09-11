@@ -1,7 +1,12 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { CSS2DRenderer, CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer.js";
+import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
+import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { GROUPS, UI, PARTS } from "./data.js";
+
+if (new URLSearchParams(location.search).has("embed")) {
+  document.documentElement.classList.add("embed");
+}
 
 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const view = document.querySelector("#view");
@@ -10,7 +15,6 @@ const filterEl = document.querySelector("#filter");
 const card = document.querySelector("#card");
 const explodeEl = document.querySelector("#explode");
 const toggleExplode = document.querySelector("#toggleExplode");
-const readBtn = document.querySelector("#readBtn");
 const langFr = document.querySelector("#langFr");
 const langEn = document.querySelector("#langEn");
 
@@ -26,30 +30,32 @@ const byId = Object.fromEntries(PARTS.map((p) => [p.id, p]));
 const nodes = new Map();
 
 function std(color, metal, rough) {
-  return new THREE.MeshStandardMaterial({
+  return new THREE.MeshPhysicalMaterial({
     color,
     metalness: metal,
     roughness: rough,
+    clearcoat: metal > 0.35 ? 0.25 : 0.04,
+    clearcoatRoughness: 0.45,
   });
 }
 
 const mat = {
-  alu: std(0x9aa3ab, 0.42, 0.48),
-  alu2: std(0x7b838c, 0.4, 0.52),
-  iron: std(0x4c5156, 0.5, 0.62),
-  steel: std(0x8e9298, 0.72, 0.32),
-  black: std(0x1c1c1c, 0.12, 0.82),
-  rubber: std(0x111111, 0.04, 0.95),
-  ceramic: std(0xe7e2d4, 0.04, 0.38),
-  copper: std(0xb87333, 0.75, 0.38),
-  rust: std(0x6a3c28, 0.28, 0.68),
-  heat: std(0x5a4d66, 0.45, 0.48),
-  plastic: std(0x242428, 0.08, 0.72),
-  gold: std(0xc4a35a, 0.65, 0.38),
-  orange: std(0xd86a1a, 0.15, 0.55),
-  filter: std(0x2c2c2c, 0.1, 0.78),
-  gasket: std(0x3a3530, 0.05, 0.9),
-  hose: std(0x2a2a28, 0.05, 0.88),
+  alu: std(0xb7c0c6, 0.55, 0.38),
+  alu2: std(0x8d969e, 0.5, 0.42),
+  iron: std(0x5a5f64, 0.48, 0.55),
+  steel: std(0x9aa0a6, 0.7, 0.28),
+  black: std(0x2a2a2c, 0.18, 0.62),
+  rubber: std(0x1c1c1c, 0.05, 0.9),
+  ceramic: std(0xf2eee4, 0.04, 0.35),
+  copper: std(0xb87333, 0.75, 0.35),
+  rust: std(0x7a4e38, 0.25, 0.58),
+  heat: std(0x6a5360, 0.4, 0.42),
+  plastic: std(0x2c2c30, 0.08, 0.55),
+  gold: std(0xc4a35a, 0.65, 0.35),
+  orange: std(0xd86a1a, 0.12, 0.5),
+  filter: std(0x303030, 0.12, 0.7),
+  gasket: std(0x3a3530, 0.04, 0.88),
+  hose: std(0x2c2c2a, 0.05, 0.82),
 };
 
 function tag(root, id) {
@@ -72,7 +78,7 @@ function add(parent, geo, material, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0)
   return m;
 }
 
-const box = (w, h, d) => new THREE.BoxGeometry(w, h, d);
+const box = (w, h, d) => new RoundedBoxGeometry(w, h, d, 2, Math.min(w, h, d) * 0.06);
 const cyl = (r, h, s = 20) => new THREE.CylinderGeometry(r, r, h, s);
 const cyl2 = (rt, rb, h, s = 16) => new THREE.CylinderGeometry(rt, rb, h, s);
 const CX = [-0.84, -0.28, 0.28, 0.84];
@@ -101,13 +107,6 @@ function buildEngine() {
     group.userData.explode = new THREE.Vector3(...spec.explode);
     nodes.set(id, group);
     root.add(group);
-    const div = document.createElement("div");
-    div.className = "label3d";
-    const lab = new CSS2DObject(div);
-    lab.position.set(0, 0.2, 0);
-    group.add(lab);
-    group.userData.label = lab;
-    group.userData.labelEl = div;
   };
 
   const bloc = new THREE.Group();
@@ -382,62 +381,52 @@ function buildEngine() {
 }
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x10100e);
-scene.fog = new THREE.Fog(0x10100e, 8, 18);
+scene.background = new THREE.Color(0xece8e1);
 
-const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 40);
-camera.position.set(3.4, 1.8, 4.2);
+const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 40);
+camera.position.set(3.1, 1.55, 3.8);
 
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
 view.appendChild(renderer.domElement);
 document.getElementById("boot")?.remove();
-window.addEventListener("error", (ev) => {
-  const boot = document.getElementById("boot") || Object.assign(document.createElement("p"), { id: "boot", className: "boot err" });
-  boot.textContent = ev.message || "Erreur de chargement";
-  if (!boot.parentNode) view.appendChild(boot);
-});
 
-const labelRenderer = new CSS2DRenderer();
-labelRenderer.domElement.style.position = "absolute";
-labelRenderer.domElement.style.inset = "0";
-labelRenderer.domElement.style.pointerEvents = "none";
-view.appendChild(labelRenderer.domElement);
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
-controls.target.set(0, 0.2, 0);
-controls.maxDistance = 10;
-controls.minDistance = 2.2;
-controls.maxPolarAngle = Math.PI * 0.88;
+controls.enablePan = false;
+controls.target.set(0, 0.25, 0);
+controls.maxDistance = 6.5;
+controls.minDistance = 2.6;
+controls.maxPolarAngle = Math.PI * 0.48;
+controls.minPolarAngle = Math.PI * 0.18;
 
-scene.add(new THREE.HemisphereLight(0xc8c0ae, 0x1a1814, 0.7));
-const key = new THREE.DirectionalLight(0xffe0b0, 1.15);
-key.position.set(3, 6, 4);
+scene.add(new THREE.HemisphereLight(0xf2eee6, 0xc4bdb2, 0.55));
+const key = new THREE.DirectionalLight(0xfff6ea, 1.05);
+key.position.set(2.6, 5.5, 3.2);
 key.castShadow = true;
 key.shadow.mapSize.set(1024, 1024);
 scene.add(key);
-const rim = new THREE.DirectionalLight(0x8899aa, 0.45);
-rim.position.set(-4, 2, -3);
+const rim = new THREE.DirectionalLight(0xd9e2ea, 0.35);
+rim.position.set(-3.5, 1.8, -2.5);
 scene.add(rim);
-const fill = new THREE.PointLight(0xe3a03a, 0.35, 12);
-fill.position.set(-1, 2.5, 2);
-scene.add(fill);
 
-const floor = new THREE.Mesh(new THREE.CircleGeometry(6, 48), new THREE.MeshStandardMaterial({
-  color: 0x161410,
-  metalness: 0.1,
-  roughness: 0.9,
+const floor = new THREE.Mesh(new THREE.CircleGeometry(5.5, 64), new THREE.MeshStandardMaterial({
+  color: 0xe4dfd6,
+  metalness: 0.04,
+  roughness: 0.92,
 }));
 floor.rotation.x = -HALF_PI;
-floor.position.y = -2.55;
+floor.position.y = -2.2;
 floor.receiveShadow = true;
 scene.add(floor);
-const grid = new THREE.GridHelper(8, 16, 0x2a2722, 0x1c1a16);
-grid.position.y = -2.54;
-scene.add(grid);
 
 const engine = buildEngine();
 scene.add(engine);
@@ -454,22 +443,12 @@ function resize() {
   camera.aspect = w / Math.max(h, 1);
   camera.updateProjectionMatrix();
   renderer.setSize(w, h);
-  labelRenderer.setSize(w, h);
 }
 new ResizeObserver(resize).observe(view);
 resize();
 
 function copyOf(id) {
   return byId[id][state.lang];
-}
-
-function setLabel(id) {
-  const g = nodes.get(id);
-  if (!g) return;
-  const on = state.selected === id || state.hover === id;
-  g.userData.labelEl.textContent = on ? copyOf(id).name : "";
-  g.userData.labelEl.classList.toggle("on", state.selected === id);
-  g.userData.label.visible = on;
 }
 
 function tint(id, hover, selected) {
@@ -481,8 +460,8 @@ function tint(id, hover, selected) {
       o.material = o.material.clone();
       o.userData._baseEmissive = o.material.emissive.clone();
     }
-    if (selected) o.material.emissive.setHex(0x5a3a10);
-    else if (hover) o.material.emissive.setHex(0x3a2a10);
+    if (selected) o.material.emissive.setHex(0x3a1c0c);
+    else if (hover) o.material.emissive.setHex(0x24160c);
     else o.material.emissive.copy(o.userData._baseEmissive);
   });
 }
@@ -490,7 +469,7 @@ function tint(id, hover, selected) {
 function renderCard() {
   const ui = UI[state.lang];
   if (!state.selected) {
-    card.innerHTML = `<p class="kicker">${ui.emptyAka}</p><h1>${ui.emptyTitle}</h1><p class="empty">${ui.empty}</p>`;
+    card.innerHTML = `<p class="kicker">${ui.emptyAka}</p><h1>${ui.emptyTitle}</h1><p class="empty">${ui.empty}</p><p class="empty">${ui.note}</p>`;
     return;
   }
   const c = copyOf(state.selected);
@@ -500,7 +479,8 @@ function renderCard() {
     <p class="aka">${c.aka}</p>
     <div class="block"><h3>${ui.role}</h3><p>${c.role}</p></div>
     <div class="block"><h3>${ui.where}</h3><p>${c.where}</p></div>
-    <div class="block"><h3>${ui.symptom}</h3><p>${c.symptom}</p></div>`;
+    <div class="block"><h3>${ui.symptom}</h3><p>${c.symptom}</p></div>
+    <p class="empty">${ui.note}</p>`;
 }
 
 function renderRail() {
@@ -539,7 +519,6 @@ function select(id) {
   state.selected = id === state.selected ? null : id;
   if (prev) tint(prev, state.hover === prev, false);
   if (state.selected) tint(state.selected, false, true);
-  PARTS.forEach((p) => setLabel(p.id));
   renderCard();
   renderRail();
 }
@@ -570,7 +549,6 @@ renderer.domElement.addEventListener("pointermove", (ev) => {
   if (state.hover && state.hover !== state.selected) tint(state.hover, false, false);
   state.hover = id;
   if (id && id !== state.selected) tint(id, true, false);
-  PARTS.forEach((p) => setLabel(p.id));
   renderer.domElement.style.cursor = id ? "pointer" : "grab";
 });
 
@@ -585,11 +563,9 @@ function syncChrome() {
   document.querySelector("#hint").textContent = ui.hint;
   document.querySelector("#explodeLabel").textContent = ui.explode;
   document.querySelector("#subtitle").textContent = ui.subtitle;
-  readBtn.textContent = ui.read;
   toggleExplode.textContent = state.targetExplode > 0.5 ? ui.assembleBtn : ui.explodeBtn;
   langFr.setAttribute("aria-pressed", state.lang === "fr" ? "true" : "false");
   langEn.setAttribute("aria-pressed", state.lang === "en" ? "true" : "false");
-  PARTS.forEach((p) => setLabel(p.id));
   renderCard();
   renderRail();
 }
@@ -606,15 +582,6 @@ toggleExplode.addEventListener("click", () => {
 langFr.addEventListener("click", () => { state.lang = "fr"; syncChrome(); });
 langEn.addEventListener("click", () => { state.lang = "en"; syncChrome(); });
 filterEl.addEventListener("input", renderRail);
-readBtn.addEventListener("click", () => {
-  speechSynthesis.cancel();
-  const text = state.selected
-    ? `${copyOf(state.selected).name}. ${copyOf(state.selected).role}`
-    : UI[state.lang].empty;
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = state.lang === "fr" ? "fr-FR" : "en-GB";
-  speechSynthesis.speak(u);
-});
 
 function tick() {
   const speed = reduced ? 1 : 0.08;
@@ -623,7 +590,6 @@ function tick() {
   applyExplode(state.explode);
   controls.update();
   renderer.render(scene, camera);
-  labelRenderer.render(scene, camera);
   requestAnimationFrame(tick);
 }
 
