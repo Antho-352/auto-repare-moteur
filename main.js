@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
+import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 import { GROUPS, UI, PARTS } from "./data.js";
 
 if (new URLSearchParams(location.search).has("embed")) {
@@ -15,6 +16,7 @@ const filterEl = document.querySelector("#filter");
 const card = document.querySelector("#card");
 const explodeEl = document.querySelector("#explode");
 const toggleExplode = document.querySelector("#toggleExplode");
+const toggleCut = document.querySelector("#toggleCut");
 const langFr = document.querySelector("#langFr");
 const langEn = document.querySelector("#langEn");
 
@@ -24,6 +26,7 @@ const state = {
   targetExplode: 0,
   selected: null,
   hover: null,
+  cutaway: true,
 };
 
 const byId = Object.fromEntries(PARTS.map((p) => [p.id, p]));
@@ -60,7 +63,16 @@ const mat = {
   ring: std(0x6a6e72, 0.55, 0.4),
   brass: std(0xb08d4a, 0.7, 0.32),
   boot: std(0x141414, 0.04, 0.85),
+  cover: new THREE.MeshPhysicalMaterial({
+    color: 0x8a2c16,
+    metalness: 0.18,
+    roughness: 0.28,
+    clearcoat: 0.85,
+    clearcoatRoughness: 0.18,
+  }),
 };
+const SHELL = new Set(["bloc-cylindres", "culasse", "couvre-culasse", "carter-distribution", "carter-huile"]);
+const clipPlane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 0.06);
 
 function tag(root, id) {
   root.userData.partId = id;
@@ -159,7 +171,7 @@ function buildEngine() {
 
   const cover = new THREE.Group();
   cover.position.y = 1.04;
-  add(cover, box(2.02, 0.16, 0.98, 0.05), mat.paint);
+  add(cover, box(2.02, 0.16, 0.98, 0.05), mat.cover);
   for (let i = 0; i < 7; i++) add(cover, box(1.7, 0.012, 0.035, 0.004), mat.alu, 0, 0.09, -0.32 + i * 0.1);
   add(cover, cyl2(0.07, 0.09, 0.07, 16), mat.black, -0.72, 0.12, 0);
   add(cover, cyl(0.05, 0.03, 16), mat.orange, -0.72, 0.16, 0);
@@ -465,52 +477,81 @@ function buildEngine() {
 }
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xece8e1);
+scene.background = new THREE.Color(0xf0ece4);
 
-const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 40);
-camera.position.set(3.1, 1.55, 3.8);
+const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 60);
+camera.position.set(2.85, 1.28, 3.55);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.05;
+renderer.toneMappingExposure = 1.18;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.localClippingEnabled = true;
 view.appendChild(renderer.domElement);
 document.getElementById("boot")?.remove();
 
 const pmrem = new THREE.PMREMGenerator(renderer);
 scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+new RGBELoader().load("./studio.hdr", (tex) => {
+  const env = pmrem.fromEquirectangular(tex).texture;
+  scene.environment = env;
+  tex.dispose();
+  renderer.toneMappingExposure = 1.08;
+});
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.enablePan = false;
-controls.target.set(0, 0.25, 0);
+controls.autoRotate = true;
+controls.autoRotateSpeed = 0.55;
+controls.target.set(0, 0.18, 0);
 controls.maxDistance = 6.5;
-controls.minDistance = 2.6;
-controls.maxPolarAngle = Math.PI * 0.48;
-controls.minPolarAngle = Math.PI * 0.18;
+controls.minDistance = 2.4;
+controls.maxPolarAngle = Math.PI * 0.49;
+controls.minPolarAngle = Math.PI * 0.16;
+renderer.domElement.addEventListener("pointerdown", () => {
+  controls.autoRotate = false;
+});
 
-scene.add(new THREE.HemisphereLight(0xf2eee6, 0xc4bdb2, 0.55));
-const key = new THREE.DirectionalLight(0xfff6ea, 1.05);
-key.position.set(2.6, 5.5, 3.2);
+scene.add(new THREE.HemisphereLight(0xfff7ee, 0xb7aea3, 0.28));
+const key = new THREE.DirectionalLight(0xfff4e6, 0.85);
+key.position.set(3.2, 6.2, 2.4);
 key.castShadow = true;
-key.shadow.mapSize.set(1024, 1024);
+key.shadow.mapSize.set(2048, 2048);
+key.shadow.camera.near = 1;
+key.shadow.camera.far = 18;
+key.shadow.camera.left = -5;
+key.shadow.camera.right = 5;
+key.shadow.camera.top = 5;
+key.shadow.camera.bottom = -5;
+key.shadow.bias = -0.0004;
 scene.add(key);
-const rim = new THREE.DirectionalLight(0xd9e2ea, 0.35);
-rim.position.set(-3.5, 1.8, -2.5);
+const rim = new THREE.DirectionalLight(0xd7e4f0, 0.45);
+rim.position.set(-4.2, 2.2, -2.8);
 scene.add(rim);
+const fill = new THREE.DirectionalLight(0xfffaf2, 0.22);
+fill.position.set(-1.2, 4.5, 4.5);
+scene.add(fill);
 
-const floor = new THREE.Mesh(new THREE.CircleGeometry(5.5, 64), new THREE.MeshStandardMaterial({
-  color: 0xe4dfd6,
-  metalness: 0.04,
-  roughness: 0.92,
-}));
+const floor = new THREE.Mesh(
+  new THREE.CircleGeometry(7.5, 72),
+  new THREE.MeshStandardMaterial({ color: 0xe9e3d8, metalness: 0.02, roughness: 0.86 })
+);
 floor.rotation.x = -HALF_PI;
 floor.position.y = -2.2;
 floor.receiveShadow = true;
 scene.add(floor);
+
+const blob = new THREE.Mesh(
+  new THREE.CircleGeometry(1.85, 48),
+  new THREE.MeshBasicMaterial({ color: 0x2c2822, transparent: true, opacity: 0.16, depthWrite: false })
+);
+blob.rotation.x = -HALF_PI;
+blob.position.y = -2.18;
+scene.add(blob);
 
 const engine = buildEngine();
 scene.add(engine);
@@ -533,6 +574,24 @@ resize();
 
 function copyOf(id) {
   return byId[id][state.lang];
+}
+
+function applyCutaway(on) {
+  state.cutaway = on;
+  for (const id of SHELL) {
+    const g = nodes.get(id);
+    if (!g) continue;
+    g.traverse((o) => {
+      if (!o.isMesh || !o.material) return;
+      if (!o.userData._baseEmissive) {
+        o.material = o.material.clone();
+        o.userData._baseEmissive = o.material.emissive.clone();
+      }
+      o.material.clippingPlanes = on ? [clipPlane] : [];
+      o.material.clipShadows = on;
+      o.material.needsUpdate = true;
+    });
+  }
 }
 
 function tint(id, hover, selected) {
@@ -648,6 +707,8 @@ function syncChrome() {
   document.querySelector("#explodeLabel").textContent = ui.explode;
   document.querySelector("#subtitle").textContent = ui.subtitle;
   toggleExplode.textContent = state.targetExplode > 0.5 ? ui.assembleBtn : ui.explodeBtn;
+  toggleCut.textContent = state.cutaway ? ui.solidBtn : ui.cutBtn;
+  toggleCut.setAttribute("aria-pressed", state.cutaway ? "true" : "false");
   langFr.setAttribute("aria-pressed", state.lang === "fr" ? "true" : "false");
   langEn.setAttribute("aria-pressed", state.lang === "en" ? "true" : "false");
   renderCard();
@@ -662,6 +723,11 @@ toggleExplode.addEventListener("click", () => {
   state.targetExplode = state.targetExplode > 0.4 ? 0 : 0.92;
   explodeEl.value = String(Math.round(state.targetExplode * 100));
   toggleExplode.textContent = state.targetExplode > 0.5 ? UI[state.lang].assembleBtn : UI[state.lang].explodeBtn;
+});
+toggleCut.addEventListener("click", () => {
+  applyCutaway(!state.cutaway);
+  toggleCut.textContent = state.cutaway ? UI[state.lang].solidBtn : UI[state.lang].cutBtn;
+  toggleCut.setAttribute("aria-pressed", state.cutaway ? "true" : "false");
 });
 langFr.addEventListener("click", () => { state.lang = "fr"; syncChrome(); });
 langEn.addEventListener("click", () => { state.lang = "en"; syncChrome(); });
@@ -678,4 +744,5 @@ function tick() {
 }
 
 syncChrome();
+applyCutaway(true);
 tick();

@@ -101,6 +101,11 @@
       color: var(--accent-ink);
     }
     .btn:hover { border-color: var(--accent); }
+    .btn[aria-pressed="true"] {
+      background: var(--ink);
+      color: var(--accent-ink);
+      border-color: var(--ink);
+    }
     .btn:focus-visible, .lang button:focus-visible, .part:focus-visible {
       outline: 2px solid var(--focus);
       outline-offset: 2px;
@@ -215,7 +220,7 @@
       color: var(--accent);
       margin-bottom: 6px;
     }
-    .block p { font-size: 14.5px; line-height: 1.5; color: #e6e0d4; text-wrap: pretty; }
+    .block p { font-size: 14.5px; line-height: 1.5; color: var(--ink); text-wrap: pretty; }
     .empty {
       color: var(--muted);
       font-size: 14.5px;
@@ -267,6 +272,7 @@
           <input id="explode" type="range" min="0" max="100" value="0" />
         </label>
         <button class="btn" id="toggleExplode" type="button">Éclater</button>
+        <button class="btn" id="toggleCut" type="button" aria-pressed="true">Coupe</button>
         <div class="lang" role="group" aria-label="Langue">
           <button type="button" id="langFr" aria-pressed="true">FR</button>
           <button type="button" id="langEn" aria-pressed="false">EN</button>

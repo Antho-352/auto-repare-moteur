@@ -265,6 +265,95 @@
     if (t < 2 / 3) return p + (q - p) * 6 * (2 / 3 - t);
     return p;
   }
+  function _generateTables() {
+    const buffer = new ArrayBuffer(4);
+    const floatView = new Float32Array(buffer);
+    const uint32View = new Uint32Array(buffer);
+    const baseTable = new Uint32Array(512);
+    const shiftTable = new Uint32Array(512);
+    for (let i = 0; i < 256; ++i) {
+      const e = i - 127;
+      if (e < -27) {
+        baseTable[i] = 0;
+        baseTable[i | 256] = 32768;
+        shiftTable[i] = 24;
+        shiftTable[i | 256] = 24;
+      } else if (e < -14) {
+        baseTable[i] = 1024 >> -e - 14;
+        baseTable[i | 256] = 1024 >> -e - 14 | 32768;
+        shiftTable[i] = -e - 1;
+        shiftTable[i | 256] = -e - 1;
+      } else if (e <= 15) {
+        baseTable[i] = e + 15 << 10;
+        baseTable[i | 256] = e + 15 << 10 | 32768;
+        shiftTable[i] = 13;
+        shiftTable[i | 256] = 13;
+      } else if (e < 128) {
+        baseTable[i] = 31744;
+        baseTable[i | 256] = 64512;
+        shiftTable[i] = 24;
+        shiftTable[i | 256] = 24;
+      } else {
+        baseTable[i] = 31744;
+        baseTable[i | 256] = 64512;
+        shiftTable[i] = 13;
+        shiftTable[i | 256] = 13;
+      }
+    }
+    const mantissaTable = new Uint32Array(2048);
+    const exponentTable = new Uint32Array(64);
+    const offsetTable = new Uint32Array(64);
+    for (let i = 1; i < 1024; ++i) {
+      let m = i << 13;
+      let e = 0;
+      while ((m & 8388608) === 0) {
+        m <<= 1;
+        e -= 8388608;
+      }
+      m &= ~8388608;
+      e += 947912704;
+      mantissaTable[i] = m | e;
+    }
+    for (let i = 1024; i < 2048; ++i) {
+      mantissaTable[i] = 939524096 + (i - 1024 << 13);
+    }
+    for (let i = 1; i < 31; ++i) {
+      exponentTable[i] = i << 23;
+    }
+    exponentTable[31] = 1199570944;
+    exponentTable[32] = 2147483648;
+    for (let i = 33; i < 63; ++i) {
+      exponentTable[i] = 2147483648 + (i - 32 << 23);
+    }
+    exponentTable[63] = 3347054592;
+    for (let i = 1; i < 64; ++i) {
+      if (i !== 32) {
+        offsetTable[i] = 1024;
+      }
+    }
+    return {
+      floatView,
+      uint32View,
+      baseTable,
+      shiftTable,
+      mantissaTable,
+      exponentTable,
+      offsetTable
+    };
+  }
+  function toHalfFloat(val) {
+    if (Math.abs(val) > 65504) console.warn("THREE.DataUtils.toHalfFloat(): Value out of range.");
+    val = clamp(val, -65504, 65504);
+    _tables.floatView[0] = val;
+    const f = _tables.uint32View[0];
+    const e = f >> 23 & 511;
+    return _tables.baseTable[e] + ((f & 8388607) >> _tables.shiftTable[e]);
+  }
+  function fromHalfFloat(val) {
+    const m = val >> 10;
+    _tables.uint32View[0] = _tables.mantissaTable[_tables.offsetTable[m] + (val & 1023)] + _tables.exponentTable[m];
+    return _tables.floatView[0];
+  }
   function checkIntersection$1(object, material, raycaster, ray, pA, pB, pC, point) {
     let intersect2;
     if (material.side === BackSide) {
@@ -7202,7 +7291,7 @@
       }
     }
   }
-  var REVISION, MOUSE, TOUCH, CullFaceNone, CullFaceBack, CullFaceFront, PCFShadowMap, PCFSoftShadowMap, VSMShadowMap, FrontSide, BackSide, DoubleSide, NoBlending, NormalBlending, AdditiveBlending, SubtractiveBlending, MultiplyBlending, CustomBlending, AddEquation, SubtractEquation, ReverseSubtractEquation, MinEquation, MaxEquation, ZeroFactor, OneFactor, SrcColorFactor, OneMinusSrcColorFactor, SrcAlphaFactor, OneMinusSrcAlphaFactor, DstAlphaFactor, OneMinusDstAlphaFactor, DstColorFactor, OneMinusDstColorFactor, SrcAlphaSaturateFactor, ConstantColorFactor, OneMinusConstantColorFactor, ConstantAlphaFactor, OneMinusConstantAlphaFactor, NeverDepth, AlwaysDepth, LessDepth, LessEqualDepth, EqualDepth, GreaterEqualDepth, GreaterDepth, NotEqualDepth, MultiplyOperation, MixOperation, AddOperation, NoToneMapping, LinearToneMapping, ReinhardToneMapping, CineonToneMapping, ACESFilmicToneMapping, CustomToneMapping, AgXToneMapping, NeutralToneMapping, UVMapping, CubeReflectionMapping, CubeRefractionMapping, EquirectangularReflectionMapping, EquirectangularRefractionMapping, CubeUVReflectionMapping, RepeatWrapping, ClampToEdgeWrapping, MirroredRepeatWrapping, NearestFilter, NearestMipmapNearestFilter, NearestMipmapLinearFilter, LinearFilter, LinearMipmapNearestFilter, LinearMipmapLinearFilter, UnsignedByteType, ByteType, ShortType, UnsignedShortType, IntType, UnsignedIntType, FloatType, HalfFloatType, UnsignedShort4444Type, UnsignedShort5551Type, UnsignedInt248Type, UnsignedInt5999Type, AlphaFormat, RGBFormat, RGBAFormat, LuminanceFormat, LuminanceAlphaFormat, DepthFormat, DepthStencilFormat, RedFormat, RedIntegerFormat, RGFormat, RGIntegerFormat, RGBAIntegerFormat, RGB_S3TC_DXT1_Format, RGBA_S3TC_DXT1_Format, RGBA_S3TC_DXT3_Format, RGBA_S3TC_DXT5_Format, RGB_PVRTC_4BPPV1_Format, RGB_PVRTC_2BPPV1_Format, RGBA_PVRTC_4BPPV1_Format, RGBA_PVRTC_2BPPV1_Format, RGB_ETC1_Format, RGB_ETC2_Format, RGBA_ETC2_EAC_Format, RGBA_ASTC_4x4_Format, RGBA_ASTC_5x4_Format, RGBA_ASTC_5x5_Format, RGBA_ASTC_6x5_Format, RGBA_ASTC_6x6_Format, RGBA_ASTC_8x5_Format, RGBA_ASTC_8x6_Format, RGBA_ASTC_8x8_Format, RGBA_ASTC_10x5_Format, RGBA_ASTC_10x6_Format, RGBA_ASTC_10x8_Format, RGBA_ASTC_10x10_Format, RGBA_ASTC_12x10_Format, RGBA_ASTC_12x12_Format, RGBA_BPTC_Format, RGB_BPTC_SIGNED_Format, RGB_BPTC_UNSIGNED_Format, RED_RGTC1_Format, SIGNED_RED_RGTC1_Format, RED_GREEN_RGTC2_Format, SIGNED_RED_GREEN_RGTC2_Format, InterpolateDiscrete, InterpolateLinear, InterpolateSmooth, ZeroCurvatureEnding, ZeroSlopeEnding, WrapAroundEnding, BasicDepthPacking, RGBADepthPacking, TangentSpaceNormalMap, ObjectSpaceNormalMap, NoColorSpace, SRGBColorSpace, LinearSRGBColorSpace, LinearTransfer, SRGBTransfer, KeepStencilOp, AlwaysStencilFunc, NeverCompare, LessCompare, EqualCompare, LessEqualCompare, GreaterCompare, NotEqualCompare, GreaterEqualCompare, AlwaysCompare, StaticDrawUsage, GLSL3, WebGLCoordinateSystem, WebGPUCoordinateSystem, EventDispatcher, _lut, _seed, DEG2RAD, RAD2DEG, MathUtils, Vector2, Matrix3, _m3, _cache, ColorManagement, REC709_PRIMARIES, REC709_LUMINANCE_COEFFICIENTS, D65, LINEAR_REC709_TO_XYZ, XYZ_TO_LINEAR_REC709, _canvas, ImageUtils, _sourceId, Source, _textureId, Texture, Vector4, RenderTarget, WebGLRenderTarget, DataArrayTexture, Data3DTexture, Quaternion, Vector3, _vector$c, _quaternion$4, Box3, _points, _vector$b, _box$4, _v0$3, _v1$7, _v2$4, _f0, _f1, _f2, _center, _extents, _triangleNormal, _testAxis, _box$3, _v1$6, _v2$3, Sphere, _vector$a, _segCenter, _segDir, _diff, _edge1, _edge2, _normal$1, Ray, Matrix4, _v1$5, _m1$4, _zero, _one, _x, _y, _z, _matrix$2, _quaternion$3, Euler, Layers, _object3DId, _v1$4, _q1, _m1$3, _target, _position$3, _scale$2, _quaternion$2, _xAxis, _yAxis, _zAxis, _addedEvent, _removedEvent, _childaddedEvent, _childremovedEvent, Object3D, _v0$2, _v1$3, _v2$2, _v3$2, _vab, _vac, _vbc, _vap, _vbp, _vcp, _v40, _v41, _v42, Triangle, _colorKeywords, _hslA, _hslB, Color, _color, _materialId, Material, MeshBasicMaterial, _vector$9, _vector2$1, BufferAttribute, Uint16BufferAttribute, Uint32BufferAttribute, Float32BufferAttribute, _id$2, _m1$2, _obj, _offset, _box$2, _boxMorphTargets, _vector$8, BufferGeometry, _inverseMatrix$3, _ray$3, _sphere$6, _sphereHitAt, _vA$1, _vB$1, _vC$1, _tempA, _morphA, _intersectionPoint, _intersectionPointWorld, Mesh, BoxGeometry, UniformsUtils, default_vertex, default_fragment, ShaderMaterial, Camera, _v3$1, _minTarget, _maxTarget, PerspectiveCamera, fov, aspect, CubeCamera, CubeTexture, WebGLCubeRenderTarget, _vector1, _vector2, _normalMatrix, Plane, _sphere$5, _vector$7, Frustum, PlaneGeometry, alphahash_fragment, alphahash_pars_fragment, alphamap_fragment, alphamap_pars_fragment, alphatest_fragment, alphatest_pars_fragment, aomap_fragment, aomap_pars_fragment, batching_pars_vertex, batching_vertex, begin_vertex, beginnormal_vertex, bsdfs, iridescence_fragment, bumpmap_pars_fragment, clipping_planes_fragment, clipping_planes_pars_fragment, clipping_planes_pars_vertex, clipping_planes_vertex, color_fragment, color_pars_fragment, color_pars_vertex, color_vertex, common, cube_uv_reflection_fragment, defaultnormal_vertex, displacementmap_pars_vertex, displacementmap_vertex, emissivemap_fragment, emissivemap_pars_fragment, colorspace_fragment, colorspace_pars_fragment, envmap_fragment, envmap_common_pars_fragment, envmap_pars_fragment, envmap_pars_vertex, envmap_vertex, fog_vertex, fog_pars_vertex, fog_fragment, fog_pars_fragment, gradientmap_pars_fragment, lightmap_pars_fragment, lights_lambert_fragment, lights_lambert_pars_fragment, lights_pars_begin, envmap_physical_pars_fragment, lights_toon_fragment, lights_toon_pars_fragment, lights_phong_fragment, lights_phong_pars_fragment, lights_physical_fragment, lights_physical_pars_fragment, lights_fragment_begin, lights_fragment_maps, lights_fragment_end, logdepthbuf_fragment, logdepthbuf_pars_fragment, logdepthbuf_pars_vertex, logdepthbuf_vertex, map_fragment, map_pars_fragment, map_particle_fragment, map_particle_pars_fragment, metalnessmap_fragment, metalnessmap_pars_fragment, morphinstance_vertex, morphcolor_vertex, morphnormal_vertex, morphtarget_pars_vertex, morphtarget_vertex, normal_fragment_begin, normal_fragment_maps, normal_pars_fragment, normal_pars_vertex, normal_vertex, normalmap_pars_fragment, clearcoat_normal_fragment_begin, clearcoat_normal_fragment_maps, clearcoat_pars_fragment, iridescence_pars_fragment, opaque_fragment, packing, premultiplied_alpha_fragment, project_vertex, dithering_fragment, dithering_pars_fragment, roughnessmap_fragment, roughnessmap_pars_fragment, shadowmap_pars_fragment, shadowmap_pars_vertex, shadowmap_vertex, shadowmask_pars_fragment, skinbase_vertex, skinning_pars_vertex, skinning_vertex, skinnormal_vertex, specularmap_fragment, specularmap_pars_fragment, tonemapping_fragment, tonemapping_pars_fragment, transmission_fragment, transmission_pars_fragment, uv_pars_fragment, uv_pars_vertex, uv_vertex, worldpos_vertex, vertex$h, fragment$h, vertex$g, fragment$g, vertex$f, fragment$f, vertex$e, fragment$e, vertex$d, fragment$d, vertex$c, fragment$c, vertex$b, fragment$b, vertex$a, fragment$a, vertex$9, fragment$9, vertex$8, fragment$8, vertex$7, fragment$7, vertex$6, fragment$6, vertex$5, fragment$5, vertex$4, fragment$4, vertex$3, fragment$3, vertex$2, fragment$2, vertex$1, fragment$1, ShaderChunk, UniformsLib, ShaderLib, _rgb, _e1$1, _m1$1, OrthographicCamera, LOD_MIN, EXTRA_LOD_SIGMA, MAX_SAMPLES, _flatCamera, _clearColor, _oldTarget, _oldActiveCubeFace, _oldActiveMipmapLevel, _oldXrEnabled, PHI, INV_PHI, _axisDirections, PMREMGenerator, DepthTexture, emptyTexture, emptyShadowTexture, emptyArrayTexture, empty3dTexture, emptyCubeTexture, arrayCacheF32, arrayCacheI32, mat4array, mat3array, mat2array, SingleUniform, PureArrayUniform, StructuredUniform, RePathPart, WebGLUniforms, COMPLETION_STATUS_KHR, programIdCount, _m0, _v0$1, includePattern, shaderChunkMap, unrollLoopPattern, _id$1, WebGLShaderCache, WebGLShaderStage, nextVersion, MeshDepthMaterial, MeshDistanceMaterial, vertex, fragment, reversedFuncs, ArrayCamera, Group, _moveEvent, WebXRController, _occlusion_vertex, _occlusion_fragment, WebXRDepthSensing, WebXRManager, _e1, _m1, WebGLRenderer, Scene, Curve, EllipseCurve, ArcCurve, tmp, px, py, pz, CatmullRomCurve3, CubicBezierCurve, CubicBezierCurve3, LineCurve, LineCurve3, QuadraticBezierCurve, QuadraticBezierCurve3, SplineCurve, Curves, CircleGeometry, CylinderGeometry, TorusGeometry, TubeGeometry, MeshStandardMaterial, MeshPhysicalMaterial, Interpolant, CubicInterpolant, LinearInterpolant, DiscreteInterpolant, KeyframeTrack, BooleanKeyframeTrack, ColorKeyframeTrack, NumberKeyframeTrack, QuaternionLinearInterpolant, QuaternionKeyframeTrack, StringKeyframeTrack, VectorKeyframeTrack, LoadingManager, DefaultLoadingManager, Loader, Light, HemisphereLight, _projScreenMatrix$1, _lightPositionWorld$1, _lookTarget$1, LightShadow, _projScreenMatrix, _lightPositionWorld, _lookTarget, PointLightShadow, PointLight, DirectionalLightShadow, DirectionalLight, _RESERVED_CHARS_RE, _reservedRe, _wordChar, _wordCharOrDot, _directoryRe, _nodeRe, _objectRe, _propertyRe, _trackRe, _supportedObjectNames, Composite, PropertyBinding, _controlInterpolantsResultBuffer, _matrix, Raycaster, Spherical, Controls;
+  var REVISION, MOUSE, TOUCH, CullFaceNone, CullFaceBack, CullFaceFront, PCFShadowMap, PCFSoftShadowMap, VSMShadowMap, FrontSide, BackSide, DoubleSide, NoBlending, NormalBlending, AdditiveBlending, SubtractiveBlending, MultiplyBlending, CustomBlending, AddEquation, SubtractEquation, ReverseSubtractEquation, MinEquation, MaxEquation, ZeroFactor, OneFactor, SrcColorFactor, OneMinusSrcColorFactor, SrcAlphaFactor, OneMinusSrcAlphaFactor, DstAlphaFactor, OneMinusDstAlphaFactor, DstColorFactor, OneMinusDstColorFactor, SrcAlphaSaturateFactor, ConstantColorFactor, OneMinusConstantColorFactor, ConstantAlphaFactor, OneMinusConstantAlphaFactor, NeverDepth, AlwaysDepth, LessDepth, LessEqualDepth, EqualDepth, GreaterEqualDepth, GreaterDepth, NotEqualDepth, MultiplyOperation, MixOperation, AddOperation, NoToneMapping, LinearToneMapping, ReinhardToneMapping, CineonToneMapping, ACESFilmicToneMapping, CustomToneMapping, AgXToneMapping, NeutralToneMapping, UVMapping, CubeReflectionMapping, CubeRefractionMapping, EquirectangularReflectionMapping, EquirectangularRefractionMapping, CubeUVReflectionMapping, RepeatWrapping, ClampToEdgeWrapping, MirroredRepeatWrapping, NearestFilter, NearestMipmapNearestFilter, NearestMipmapLinearFilter, LinearFilter, LinearMipmapNearestFilter, LinearMipmapLinearFilter, UnsignedByteType, ByteType, ShortType, UnsignedShortType, IntType, UnsignedIntType, FloatType, HalfFloatType, UnsignedShort4444Type, UnsignedShort5551Type, UnsignedInt248Type, UnsignedInt5999Type, AlphaFormat, RGBFormat, RGBAFormat, LuminanceFormat, LuminanceAlphaFormat, DepthFormat, DepthStencilFormat, RedFormat, RedIntegerFormat, RGFormat, RGIntegerFormat, RGBAIntegerFormat, RGB_S3TC_DXT1_Format, RGBA_S3TC_DXT1_Format, RGBA_S3TC_DXT3_Format, RGBA_S3TC_DXT5_Format, RGB_PVRTC_4BPPV1_Format, RGB_PVRTC_2BPPV1_Format, RGBA_PVRTC_4BPPV1_Format, RGBA_PVRTC_2BPPV1_Format, RGB_ETC1_Format, RGB_ETC2_Format, RGBA_ETC2_EAC_Format, RGBA_ASTC_4x4_Format, RGBA_ASTC_5x4_Format, RGBA_ASTC_5x5_Format, RGBA_ASTC_6x5_Format, RGBA_ASTC_6x6_Format, RGBA_ASTC_8x5_Format, RGBA_ASTC_8x6_Format, RGBA_ASTC_8x8_Format, RGBA_ASTC_10x5_Format, RGBA_ASTC_10x6_Format, RGBA_ASTC_10x8_Format, RGBA_ASTC_10x10_Format, RGBA_ASTC_12x10_Format, RGBA_ASTC_12x12_Format, RGBA_BPTC_Format, RGB_BPTC_SIGNED_Format, RGB_BPTC_UNSIGNED_Format, RED_RGTC1_Format, SIGNED_RED_RGTC1_Format, RED_GREEN_RGTC2_Format, SIGNED_RED_GREEN_RGTC2_Format, InterpolateDiscrete, InterpolateLinear, InterpolateSmooth, ZeroCurvatureEnding, ZeroSlopeEnding, WrapAroundEnding, BasicDepthPacking, RGBADepthPacking, TangentSpaceNormalMap, ObjectSpaceNormalMap, NoColorSpace, SRGBColorSpace, LinearSRGBColorSpace, LinearTransfer, SRGBTransfer, KeepStencilOp, AlwaysStencilFunc, NeverCompare, LessCompare, EqualCompare, LessEqualCompare, GreaterCompare, NotEqualCompare, GreaterEqualCompare, AlwaysCompare, StaticDrawUsage, GLSL3, WebGLCoordinateSystem, WebGPUCoordinateSystem, EventDispatcher, _lut, _seed, DEG2RAD, RAD2DEG, MathUtils, Vector2, Matrix3, _m3, _cache, ColorManagement, REC709_PRIMARIES, REC709_LUMINANCE_COEFFICIENTS, D65, LINEAR_REC709_TO_XYZ, XYZ_TO_LINEAR_REC709, _canvas, ImageUtils, _sourceId, Source, _textureId, Texture, Vector4, RenderTarget, WebGLRenderTarget, DataArrayTexture, Data3DTexture, Quaternion, Vector3, _vector$c, _quaternion$4, Box3, _points, _vector$b, _box$4, _v0$3, _v1$7, _v2$4, _f0, _f1, _f2, _center, _extents, _triangleNormal, _testAxis, _box$3, _v1$6, _v2$3, Sphere, _vector$a, _segCenter, _segDir, _diff, _edge1, _edge2, _normal$1, Ray, Matrix4, _v1$5, _m1$4, _zero, _one, _x, _y, _z, _matrix$2, _quaternion$3, Euler, Layers, _object3DId, _v1$4, _q1, _m1$3, _target, _position$3, _scale$2, _quaternion$2, _xAxis, _yAxis, _zAxis, _addedEvent, _removedEvent, _childaddedEvent, _childremovedEvent, Object3D, _v0$2, _v1$3, _v2$2, _v3$2, _vab, _vac, _vbc, _vap, _vbp, _vcp, _v40, _v41, _v42, Triangle, _colorKeywords, _hslA, _hslB, Color, _color, _materialId, Material, MeshBasicMaterial, _tables, DataUtils, _vector$9, _vector2$1, BufferAttribute, Uint16BufferAttribute, Uint32BufferAttribute, Float32BufferAttribute, _id$2, _m1$2, _obj, _offset, _box$2, _boxMorphTargets, _vector$8, BufferGeometry, _inverseMatrix$3, _ray$3, _sphere$6, _sphereHitAt, _vA$1, _vB$1, _vC$1, _tempA, _morphA, _intersectionPoint, _intersectionPointWorld, Mesh, BoxGeometry, UniformsUtils, default_vertex, default_fragment, ShaderMaterial, Camera, _v3$1, _minTarget, _maxTarget, PerspectiveCamera, fov, aspect, CubeCamera, CubeTexture, WebGLCubeRenderTarget, _vector1, _vector2, _normalMatrix, Plane, _sphere$5, _vector$7, Frustum, PlaneGeometry, alphahash_fragment, alphahash_pars_fragment, alphamap_fragment, alphamap_pars_fragment, alphatest_fragment, alphatest_pars_fragment, aomap_fragment, aomap_pars_fragment, batching_pars_vertex, batching_vertex, begin_vertex, beginnormal_vertex, bsdfs, iridescence_fragment, bumpmap_pars_fragment, clipping_planes_fragment, clipping_planes_pars_fragment, clipping_planes_pars_vertex, clipping_planes_vertex, color_fragment, color_pars_fragment, color_pars_vertex, color_vertex, common, cube_uv_reflection_fragment, defaultnormal_vertex, displacementmap_pars_vertex, displacementmap_vertex, emissivemap_fragment, emissivemap_pars_fragment, colorspace_fragment, colorspace_pars_fragment, envmap_fragment, envmap_common_pars_fragment, envmap_pars_fragment, envmap_pars_vertex, envmap_vertex, fog_vertex, fog_pars_vertex, fog_fragment, fog_pars_fragment, gradientmap_pars_fragment, lightmap_pars_fragment, lights_lambert_fragment, lights_lambert_pars_fragment, lights_pars_begin, envmap_physical_pars_fragment, lights_toon_fragment, lights_toon_pars_fragment, lights_phong_fragment, lights_phong_pars_fragment, lights_physical_fragment, lights_physical_pars_fragment, lights_fragment_begin, lights_fragment_maps, lights_fragment_end, logdepthbuf_fragment, logdepthbuf_pars_fragment, logdepthbuf_pars_vertex, logdepthbuf_vertex, map_fragment, map_pars_fragment, map_particle_fragment, map_particle_pars_fragment, metalnessmap_fragment, metalnessmap_pars_fragment, morphinstance_vertex, morphcolor_vertex, morphnormal_vertex, morphtarget_pars_vertex, morphtarget_vertex, normal_fragment_begin, normal_fragment_maps, normal_pars_fragment, normal_pars_vertex, normal_vertex, normalmap_pars_fragment, clearcoat_normal_fragment_begin, clearcoat_normal_fragment_maps, clearcoat_pars_fragment, iridescence_pars_fragment, opaque_fragment, packing, premultiplied_alpha_fragment, project_vertex, dithering_fragment, dithering_pars_fragment, roughnessmap_fragment, roughnessmap_pars_fragment, shadowmap_pars_fragment, shadowmap_pars_vertex, shadowmap_vertex, shadowmask_pars_fragment, skinbase_vertex, skinning_pars_vertex, skinning_vertex, skinnormal_vertex, specularmap_fragment, specularmap_pars_fragment, tonemapping_fragment, tonemapping_pars_fragment, transmission_fragment, transmission_pars_fragment, uv_pars_fragment, uv_pars_vertex, uv_vertex, worldpos_vertex, vertex$h, fragment$h, vertex$g, fragment$g, vertex$f, fragment$f, vertex$e, fragment$e, vertex$d, fragment$d, vertex$c, fragment$c, vertex$b, fragment$b, vertex$a, fragment$a, vertex$9, fragment$9, vertex$8, fragment$8, vertex$7, fragment$7, vertex$6, fragment$6, vertex$5, fragment$5, vertex$4, fragment$4, vertex$3, fragment$3, vertex$2, fragment$2, vertex$1, fragment$1, ShaderChunk, UniformsLib, ShaderLib, _rgb, _e1$1, _m1$1, OrthographicCamera, LOD_MIN, EXTRA_LOD_SIGMA, MAX_SAMPLES, _flatCamera, _clearColor, _oldTarget, _oldActiveCubeFace, _oldActiveMipmapLevel, _oldXrEnabled, PHI, INV_PHI, _axisDirections, PMREMGenerator, DepthTexture, emptyTexture, emptyShadowTexture, emptyArrayTexture, empty3dTexture, emptyCubeTexture, arrayCacheF32, arrayCacheI32, mat4array, mat3array, mat2array, SingleUniform, PureArrayUniform, StructuredUniform, RePathPart, WebGLUniforms, COMPLETION_STATUS_KHR, programIdCount, _m0, _v0$1, includePattern, shaderChunkMap, unrollLoopPattern, _id$1, WebGLShaderCache, WebGLShaderStage, nextVersion, MeshDepthMaterial, MeshDistanceMaterial, vertex, fragment, reversedFuncs, ArrayCamera, Group, _moveEvent, WebXRController, _occlusion_vertex, _occlusion_fragment, WebXRDepthSensing, WebXRManager, _e1, _m1, WebGLRenderer, Scene, DataTexture, Curve, EllipseCurve, ArcCurve, tmp, px, py, pz, CatmullRomCurve3, CubicBezierCurve, CubicBezierCurve3, LineCurve, LineCurve3, QuadraticBezierCurve, QuadraticBezierCurve3, SplineCurve, Curves, CircleGeometry, CylinderGeometry, TorusGeometry, TubeGeometry, MeshStandardMaterial, MeshPhysicalMaterial, Interpolant, CubicInterpolant, LinearInterpolant, DiscreteInterpolant, KeyframeTrack, BooleanKeyframeTrack, ColorKeyframeTrack, NumberKeyframeTrack, QuaternionLinearInterpolant, QuaternionKeyframeTrack, StringKeyframeTrack, VectorKeyframeTrack, Cache, LoadingManager, DefaultLoadingManager, Loader, loading, HttpError, FileLoader, DataTextureLoader, Light, HemisphereLight, _projScreenMatrix$1, _lightPositionWorld$1, _lookTarget$1, LightShadow, _projScreenMatrix, _lightPositionWorld, _lookTarget, PointLightShadow, PointLight, DirectionalLightShadow, DirectionalLight, _RESERVED_CHARS_RE, _reservedRe, _wordChar, _wordCharOrDot, _directoryRe, _nodeRe, _objectRe, _propertyRe, _trackRe, _supportedObjectNames, Composite, PropertyBinding, _controlInterpolantsResultBuffer, _matrix, Raycaster, Spherical, Controls;
   var init_three_module = __esm({
     "node_modules/three/build/three.module.js"() {
       REVISION = "170";
@@ -12960,6 +13049,11 @@
           return this;
         }
       };
+      _tables = /* @__PURE__ */ _generateTables();
+      DataUtils = {
+        toHalfFloat,
+        fromHalfFloat
+      };
       _vector$9 = /* @__PURE__ */ new Vector3();
       _vector2$1 = /* @__PURE__ */ new Vector2();
       BufferAttribute = class {
@@ -18449,6 +18543,16 @@ void main() {
           return data;
         }
       };
+      DataTexture = class extends Texture {
+        constructor(data = null, width = 1, height = 1, format, type, mapping, wrapS, wrapT, magFilter = NearestFilter, minFilter = NearestFilter, anisotropy, colorSpace) {
+          super(null, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy, colorSpace);
+          this.isDataTexture = true;
+          this.image = { data, width, height };
+          this.generateMipmaps = false;
+          this.flipY = false;
+          this.unpackAlignment = 1;
+        }
+      };
       Curve = class {
         constructor() {
           this.type = "Curve";
@@ -20190,6 +20294,24 @@ void main() {
       VectorKeyframeTrack = class extends KeyframeTrack {
       };
       VectorKeyframeTrack.prototype.ValueTypeName = "vector";
+      Cache = {
+        enabled: false,
+        files: {},
+        add: function(key, file) {
+          if (this.enabled === false) return;
+          this.files[key] = file;
+        },
+        get: function(key) {
+          if (this.enabled === false) return;
+          return this.files[key];
+        },
+        remove: function(key) {
+          delete this.files[key];
+        },
+        clear: function() {
+          this.files = {};
+        }
+      };
       LoadingManager = class {
         constructor(onLoad, onProgress, onError) {
           const scope = this;
@@ -20304,6 +20426,214 @@ void main() {
         }
       };
       Loader.DEFAULT_MATERIAL_NAME = "__DEFAULT";
+      loading = {};
+      HttpError = class extends Error {
+        constructor(message, response) {
+          super(message);
+          this.response = response;
+        }
+      };
+      FileLoader = class extends Loader {
+        constructor(manager) {
+          super(manager);
+        }
+        load(url, onLoad, onProgress, onError) {
+          if (url === void 0) url = "";
+          if (this.path !== void 0) url = this.path + url;
+          url = this.manager.resolveURL(url);
+          const cached = Cache.get(url);
+          if (cached !== void 0) {
+            this.manager.itemStart(url);
+            setTimeout(() => {
+              if (onLoad) onLoad(cached);
+              this.manager.itemEnd(url);
+            }, 0);
+            return cached;
+          }
+          if (loading[url] !== void 0) {
+            loading[url].push({
+              onLoad,
+              onProgress,
+              onError
+            });
+            return;
+          }
+          loading[url] = [];
+          loading[url].push({
+            onLoad,
+            onProgress,
+            onError
+          });
+          const req = new Request(url, {
+            headers: new Headers(this.requestHeader),
+            credentials: this.withCredentials ? "include" : "same-origin"
+            // An abort controller could be added within a future PR
+          });
+          const mimeType = this.mimeType;
+          const responseType = this.responseType;
+          fetch(req).then((response) => {
+            if (response.status === 200 || response.status === 0) {
+              if (response.status === 0) {
+                console.warn("THREE.FileLoader: HTTP Status 0 received.");
+              }
+              if (typeof ReadableStream === "undefined" || response.body === void 0 || response.body.getReader === void 0) {
+                return response;
+              }
+              const callbacks = loading[url];
+              const reader = response.body.getReader();
+              const contentLength = response.headers.get("X-File-Size") || response.headers.get("Content-Length");
+              const total = contentLength ? parseInt(contentLength) : 0;
+              const lengthComputable = total !== 0;
+              let loaded = 0;
+              const stream = new ReadableStream({
+                start(controller) {
+                  readData();
+                  function readData() {
+                    reader.read().then(({ done, value }) => {
+                      if (done) {
+                        controller.close();
+                      } else {
+                        loaded += value.byteLength;
+                        const event = new ProgressEvent("progress", { lengthComputable, loaded, total });
+                        for (let i = 0, il = callbacks.length; i < il; i++) {
+                          const callback = callbacks[i];
+                          if (callback.onProgress) callback.onProgress(event);
+                        }
+                        controller.enqueue(value);
+                        readData();
+                      }
+                    }, (e) => {
+                      controller.error(e);
+                    });
+                  }
+                }
+              });
+              return new Response(stream);
+            } else {
+              throw new HttpError(`fetch for "${response.url}" responded with ${response.status}: ${response.statusText}`, response);
+            }
+          }).then((response) => {
+            switch (responseType) {
+              case "arraybuffer":
+                return response.arrayBuffer();
+              case "blob":
+                return response.blob();
+              case "document":
+                return response.text().then((text) => {
+                  const parser = new DOMParser();
+                  return parser.parseFromString(text, mimeType);
+                });
+              case "json":
+                return response.json();
+              default:
+                if (mimeType === void 0) {
+                  return response.text();
+                } else {
+                  const re = /charset="?([^;"\s]*)"?/i;
+                  const exec = re.exec(mimeType);
+                  const label = exec && exec[1] ? exec[1].toLowerCase() : void 0;
+                  const decoder = new TextDecoder(label);
+                  return response.arrayBuffer().then((ab) => decoder.decode(ab));
+                }
+            }
+          }).then((data) => {
+            Cache.add(url, data);
+            const callbacks = loading[url];
+            delete loading[url];
+            for (let i = 0, il = callbacks.length; i < il; i++) {
+              const callback = callbacks[i];
+              if (callback.onLoad) callback.onLoad(data);
+            }
+          }).catch((err) => {
+            const callbacks = loading[url];
+            if (callbacks === void 0) {
+              this.manager.itemError(url);
+              throw err;
+            }
+            delete loading[url];
+            for (let i = 0, il = callbacks.length; i < il; i++) {
+              const callback = callbacks[i];
+              if (callback.onError) callback.onError(err);
+            }
+            this.manager.itemError(url);
+          }).finally(() => {
+            this.manager.itemEnd(url);
+          });
+          this.manager.itemStart(url);
+        }
+        setResponseType(value) {
+          this.responseType = value;
+          return this;
+        }
+        setMimeType(value) {
+          this.mimeType = value;
+          return this;
+        }
+      };
+      DataTextureLoader = class extends Loader {
+        constructor(manager) {
+          super(manager);
+        }
+        load(url, onLoad, onProgress, onError) {
+          const scope = this;
+          const texture = new DataTexture();
+          const loader = new FileLoader(this.manager);
+          loader.setResponseType("arraybuffer");
+          loader.setRequestHeader(this.requestHeader);
+          loader.setPath(this.path);
+          loader.setWithCredentials(scope.withCredentials);
+          loader.load(url, function(buffer) {
+            let texData;
+            try {
+              texData = scope.parse(buffer);
+            } catch (error) {
+              if (onError !== void 0) {
+                onError(error);
+              } else {
+                console.error(error);
+                return;
+              }
+            }
+            if (texData.image !== void 0) {
+              texture.image = texData.image;
+            } else if (texData.data !== void 0) {
+              texture.image.width = texData.width;
+              texture.image.height = texData.height;
+              texture.image.data = texData.data;
+            }
+            texture.wrapS = texData.wrapS !== void 0 ? texData.wrapS : ClampToEdgeWrapping;
+            texture.wrapT = texData.wrapT !== void 0 ? texData.wrapT : ClampToEdgeWrapping;
+            texture.magFilter = texData.magFilter !== void 0 ? texData.magFilter : LinearFilter;
+            texture.minFilter = texData.minFilter !== void 0 ? texData.minFilter : LinearFilter;
+            texture.anisotropy = texData.anisotropy !== void 0 ? texData.anisotropy : 1;
+            if (texData.colorSpace !== void 0) {
+              texture.colorSpace = texData.colorSpace;
+            }
+            if (texData.flipY !== void 0) {
+              texture.flipY = texData.flipY;
+            }
+            if (texData.format !== void 0) {
+              texture.format = texData.format;
+            }
+            if (texData.type !== void 0) {
+              texture.type = texData.type;
+            }
+            if (texData.mipmaps !== void 0) {
+              texture.mipmaps = texData.mipmaps;
+              texture.minFilter = LinearMipmapLinearFilter;
+            }
+            if (texData.mipmapCount === 1) {
+              texture.minFilter = LinearFilter;
+            }
+            if (texData.generateMipmaps !== void 0) {
+              texture.generateMipmaps = texData.generateMipmaps;
+            }
+            texture.needsUpdate = true;
+            if (onLoad) onLoad(texture, texData);
+          }, onProgress, onError);
+          return texture;
+        }
+      };
       Light = class extends Object3D {
         constructor(color, intensity = 1) {
           super();
@@ -22058,6 +22388,253 @@ void main() {
     }
   });
 
+  // node_modules/three/examples/jsm/loaders/RGBELoader.js
+  var RGBELoader;
+  var init_RGBELoader = __esm({
+    "node_modules/three/examples/jsm/loaders/RGBELoader.js"() {
+      init_three_module();
+      RGBELoader = class extends DataTextureLoader {
+        constructor(manager) {
+          super(manager);
+          this.type = HalfFloatType;
+        }
+        // adapted from http://www.graphics.cornell.edu/~bjw/rgbe.html
+        parse(buffer) {
+          const rgbe_read_error = 1, rgbe_write_error = 2, rgbe_format_error = 3, rgbe_memory_error = 4, rgbe_error = function(rgbe_error_code, msg) {
+            switch (rgbe_error_code) {
+              case rgbe_read_error:
+                throw new Error("THREE.RGBELoader: Read Error: " + (msg || ""));
+              case rgbe_write_error:
+                throw new Error("THREE.RGBELoader: Write Error: " + (msg || ""));
+              case rgbe_format_error:
+                throw new Error("THREE.RGBELoader: Bad File Format: " + (msg || ""));
+              default:
+              case rgbe_memory_error:
+                throw new Error("THREE.RGBELoader: Memory Error: " + (msg || ""));
+            }
+          }, RGBE_VALID_PROGRAMTYPE = 1, RGBE_VALID_FORMAT = 2, RGBE_VALID_DIMENSIONS = 4, NEWLINE = "\n", fgets = function(buffer2, lineLimit, consume) {
+            const chunkSize = 128;
+            lineLimit = !lineLimit ? 1024 : lineLimit;
+            let p = buffer2.pos, i = -1, len = 0, s = "", chunk = String.fromCharCode.apply(null, new Uint16Array(buffer2.subarray(p, p + chunkSize)));
+            while (0 > (i = chunk.indexOf(NEWLINE)) && len < lineLimit && p < buffer2.byteLength) {
+              s += chunk;
+              len += chunk.length;
+              p += chunkSize;
+              chunk += String.fromCharCode.apply(null, new Uint16Array(buffer2.subarray(p, p + chunkSize)));
+            }
+            if (-1 < i) {
+              if (false !== consume) buffer2.pos += len + i + 1;
+              return s + chunk.slice(0, i);
+            }
+            return false;
+          }, RGBE_ReadHeader = function(buffer2) {
+            const magic_token_re = /^#\?(\S+)/, gamma_re = /^\s*GAMMA\s*=\s*(\d+(\.\d+)?)\s*$/, exposure_re = /^\s*EXPOSURE\s*=\s*(\d+(\.\d+)?)\s*$/, format_re = /^\s*FORMAT=(\S+)\s*$/, dimensions_re = /^\s*\-Y\s+(\d+)\s+\+X\s+(\d+)\s*$/, header = {
+              valid: 0,
+              /* indicate which fields are valid */
+              string: "",
+              /* the actual header string */
+              comments: "",
+              /* comments found in header */
+              programtype: "RGBE",
+              /* listed at beginning of file to identify it after "#?". defaults to "RGBE" */
+              format: "",
+              /* RGBE format, default 32-bit_rle_rgbe */
+              gamma: 1,
+              /* image has already been gamma corrected with given gamma. defaults to 1.0 (no correction) */
+              exposure: 1,
+              /* a value of 1.0 in an image corresponds to <exposure> watts/steradian/m^2. defaults to 1.0 */
+              width: 0,
+              height: 0
+              /* image dimensions, width/height */
+            };
+            let line, match;
+            if (buffer2.pos >= buffer2.byteLength || !(line = fgets(buffer2))) {
+              rgbe_error(rgbe_read_error, "no header found");
+            }
+            if (!(match = line.match(magic_token_re))) {
+              rgbe_error(rgbe_format_error, "bad initial token");
+            }
+            header.valid |= RGBE_VALID_PROGRAMTYPE;
+            header.programtype = match[1];
+            header.string += line + "\n";
+            while (true) {
+              line = fgets(buffer2);
+              if (false === line) break;
+              header.string += line + "\n";
+              if ("#" === line.charAt(0)) {
+                header.comments += line + "\n";
+                continue;
+              }
+              if (match = line.match(gamma_re)) {
+                header.gamma = parseFloat(match[1]);
+              }
+              if (match = line.match(exposure_re)) {
+                header.exposure = parseFloat(match[1]);
+              }
+              if (match = line.match(format_re)) {
+                header.valid |= RGBE_VALID_FORMAT;
+                header.format = match[1];
+              }
+              if (match = line.match(dimensions_re)) {
+                header.valid |= RGBE_VALID_DIMENSIONS;
+                header.height = parseInt(match[1], 10);
+                header.width = parseInt(match[2], 10);
+              }
+              if (header.valid & RGBE_VALID_FORMAT && header.valid & RGBE_VALID_DIMENSIONS) break;
+            }
+            if (!(header.valid & RGBE_VALID_FORMAT)) {
+              rgbe_error(rgbe_format_error, "missing format specifier");
+            }
+            if (!(header.valid & RGBE_VALID_DIMENSIONS)) {
+              rgbe_error(rgbe_format_error, "missing image size specifier");
+            }
+            return header;
+          }, RGBE_ReadPixels_RLE = function(buffer2, w2, h2) {
+            const scanline_width = w2;
+            if (
+              // run length encoding is not allowed so read flat
+              scanline_width < 8 || scanline_width > 32767 || // this file is not run length encoded
+              (2 !== buffer2[0] || 2 !== buffer2[1] || buffer2[2] & 128)
+            ) {
+              return new Uint8Array(buffer2);
+            }
+            if (scanline_width !== (buffer2[2] << 8 | buffer2[3])) {
+              rgbe_error(rgbe_format_error, "wrong scanline width");
+            }
+            const data_rgba = new Uint8Array(4 * w2 * h2);
+            if (!data_rgba.length) {
+              rgbe_error(rgbe_memory_error, "unable to allocate buffer space");
+            }
+            let offset = 0, pos = 0;
+            const ptr_end = 4 * scanline_width;
+            const rgbeStart = new Uint8Array(4);
+            const scanline_buffer = new Uint8Array(ptr_end);
+            let num_scanlines = h2;
+            while (num_scanlines > 0 && pos < buffer2.byteLength) {
+              if (pos + 4 > buffer2.byteLength) {
+                rgbe_error(rgbe_read_error);
+              }
+              rgbeStart[0] = buffer2[pos++];
+              rgbeStart[1] = buffer2[pos++];
+              rgbeStart[2] = buffer2[pos++];
+              rgbeStart[3] = buffer2[pos++];
+              if (2 != rgbeStart[0] || 2 != rgbeStart[1] || (rgbeStart[2] << 8 | rgbeStart[3]) != scanline_width) {
+                rgbe_error(rgbe_format_error, "bad rgbe scanline format");
+              }
+              let ptr = 0, count;
+              while (ptr < ptr_end && pos < buffer2.byteLength) {
+                count = buffer2[pos++];
+                const isEncodedRun = count > 128;
+                if (isEncodedRun) count -= 128;
+                if (0 === count || ptr + count > ptr_end) {
+                  rgbe_error(rgbe_format_error, "bad scanline data");
+                }
+                if (isEncodedRun) {
+                  const byteValue = buffer2[pos++];
+                  for (let i = 0; i < count; i++) {
+                    scanline_buffer[ptr++] = byteValue;
+                  }
+                } else {
+                  scanline_buffer.set(buffer2.subarray(pos, pos + count), ptr);
+                  ptr += count;
+                  pos += count;
+                }
+              }
+              const l = scanline_width;
+              for (let i = 0; i < l; i++) {
+                let off = 0;
+                data_rgba[offset] = scanline_buffer[i + off];
+                off += scanline_width;
+                data_rgba[offset + 1] = scanline_buffer[i + off];
+                off += scanline_width;
+                data_rgba[offset + 2] = scanline_buffer[i + off];
+                off += scanline_width;
+                data_rgba[offset + 3] = scanline_buffer[i + off];
+                offset += 4;
+              }
+              num_scanlines--;
+            }
+            return data_rgba;
+          };
+          const RGBEByteToRGBFloat = function(sourceArray, sourceOffset, destArray, destOffset) {
+            const e = sourceArray[sourceOffset + 3];
+            const scale = Math.pow(2, e - 128) / 255;
+            destArray[destOffset + 0] = sourceArray[sourceOffset + 0] * scale;
+            destArray[destOffset + 1] = sourceArray[sourceOffset + 1] * scale;
+            destArray[destOffset + 2] = sourceArray[sourceOffset + 2] * scale;
+            destArray[destOffset + 3] = 1;
+          };
+          const RGBEByteToRGBHalf = function(sourceArray, sourceOffset, destArray, destOffset) {
+            const e = sourceArray[sourceOffset + 3];
+            const scale = Math.pow(2, e - 128) / 255;
+            destArray[destOffset + 0] = DataUtils.toHalfFloat(Math.min(sourceArray[sourceOffset + 0] * scale, 65504));
+            destArray[destOffset + 1] = DataUtils.toHalfFloat(Math.min(sourceArray[sourceOffset + 1] * scale, 65504));
+            destArray[destOffset + 2] = DataUtils.toHalfFloat(Math.min(sourceArray[sourceOffset + 2] * scale, 65504));
+            destArray[destOffset + 3] = DataUtils.toHalfFloat(1);
+          };
+          const byteArray = new Uint8Array(buffer);
+          byteArray.pos = 0;
+          const rgbe_header_info = RGBE_ReadHeader(byteArray);
+          const w = rgbe_header_info.width, h = rgbe_header_info.height, image_rgba_data = RGBE_ReadPixels_RLE(byteArray.subarray(byteArray.pos), w, h);
+          let data, type;
+          let numElements;
+          switch (this.type) {
+            case FloatType:
+              numElements = image_rgba_data.length / 4;
+              const floatArray = new Float32Array(numElements * 4);
+              for (let j = 0; j < numElements; j++) {
+                RGBEByteToRGBFloat(image_rgba_data, j * 4, floatArray, j * 4);
+              }
+              data = floatArray;
+              type = FloatType;
+              break;
+            case HalfFloatType:
+              numElements = image_rgba_data.length / 4;
+              const halfArray = new Uint16Array(numElements * 4);
+              for (let j = 0; j < numElements; j++) {
+                RGBEByteToRGBHalf(image_rgba_data, j * 4, halfArray, j * 4);
+              }
+              data = halfArray;
+              type = HalfFloatType;
+              break;
+            default:
+              throw new Error("THREE.RGBELoader: Unsupported type: " + this.type);
+              break;
+          }
+          return {
+            width: w,
+            height: h,
+            data,
+            header: rgbe_header_info.string,
+            gamma: rgbe_header_info.gamma,
+            exposure: rgbe_header_info.exposure,
+            type
+          };
+        }
+        setDataType(value) {
+          this.type = value;
+          return this;
+        }
+        load(url, onLoad, onProgress, onError) {
+          function onLoadCallback(texture, texData) {
+            switch (texture.type) {
+              case FloatType:
+              case HalfFloatType:
+                texture.colorSpace = LinearSRGBColorSpace;
+                texture.minFilter = LinearFilter;
+                texture.magFilter = LinearFilter;
+                texture.generateMipmaps = false;
+                texture.flipY = true;
+                break;
+            }
+            if (onLoad) onLoad(texture, texData);
+          }
+          return super.load(url, onLoadCallback, onProgress, onError);
+        }
+      };
+    }
+  });
+
   // data.js
   var GROUPS, UI, PARTS;
   var init_data = __esm({
@@ -22080,6 +22657,8 @@ void main() {
           explode: "\xC9clat\xE9",
           explodeBtn: "\xC9clater",
           assembleBtn: "Remonter",
+          cutBtn: "Coupe",
+          solidBtn: "Plein",
           filter: "Rechercher une pi\xE8ce\u2026",
           emptyTitle: "Moteur 4 cylindres en ligne",
           emptyAka: "Sch\xE9ma p\xE9dagogique \xB7 essence",
@@ -22095,6 +22674,8 @@ void main() {
           explode: "Exploded",
           explodeBtn: "Explode",
           assembleBtn: "Assemble",
+          cutBtn: "Cutaway",
+          solidBtn: "Solid",
           filter: "Search a part\u2026",
           emptyTitle: "Inline-four engine",
           emptyAka: "Teaching diagram \xB7 petrol",
@@ -22878,6 +23459,7 @@ void main() {
       init_OrbitControls();
       init_RoomEnvironment();
       init_RoundedBoxGeometry();
+      init_RGBELoader();
       init_data();
       if (new URLSearchParams(location.search).has("embed")) {
         document.documentElement.classList.add("embed");
@@ -22889,6 +23471,7 @@ void main() {
       var card = document.querySelector("#card");
       var explodeEl = document.querySelector("#explode");
       var toggleExplode = document.querySelector("#toggleExplode");
+      var toggleCut = document.querySelector("#toggleCut");
       var langFr = document.querySelector("#langFr");
       var langEn = document.querySelector("#langEn");
       var state = {
@@ -22896,7 +23479,8 @@ void main() {
         explode: 0,
         targetExplode: 0,
         selected: null,
-        hover: null
+        hover: null,
+        cutaway: true
       };
       var byId = Object.fromEntries(PARTS.map((p) => [p.id, p]));
       var nodes = /* @__PURE__ */ new Map();
@@ -22929,8 +23513,17 @@ void main() {
         paint: std(12963283, 0.35, 0.32),
         ring: std(6975090, 0.55, 0.4),
         brass: std(11570506, 0.7, 0.32),
-        boot: std(1315860, 0.04, 0.85)
+        boot: std(1315860, 0.04, 0.85),
+        cover: new MeshPhysicalMaterial({
+          color: 9055254,
+          metalness: 0.18,
+          roughness: 0.28,
+          clearcoat: 0.85,
+          clearcoatRoughness: 0.18
+        })
       };
+      var SHELL = /* @__PURE__ */ new Set(["bloc-cylindres", "culasse", "couvre-culasse", "carter-distribution", "carter-huile"]);
+      var clipPlane = new Plane(new Vector3(0, 0, -1), 0.06);
       function tag(root, id) {
         root.userData.partId = id;
         root.traverse((o) => {
@@ -23018,7 +23611,7 @@ void main() {
         put("joint-culasse", gasket);
         const cover = new Group();
         cover.position.y = 1.04;
-        add(cover, box(2.02, 0.16, 0.98, 0.05), mat.paint);
+        add(cover, box(2.02, 0.16, 0.98, 0.05), mat.cover);
         for (let i = 0; i < 7; i++) add(cover, box(1.7, 0.012, 0.035, 4e-3), mat.alu, 0, 0.09, -0.32 + i * 0.1);
         add(cover, cyl2(0.07, 0.09, 0.07, 16), mat.black, -0.72, 0.12, 0);
         add(cover, cyl(0.05, 0.03, 16), mat.orange, -0.72, 0.16, 0);
@@ -23286,46 +23879,74 @@ void main() {
         return root;
       }
       var scene = new Scene();
-      scene.background = new Color(15526113);
-      var camera = new PerspectiveCamera(38, 1, 0.1, 40);
-      camera.position.set(3.1, 1.55, 3.8);
+      scene.background = new Color(15789284);
+      var camera = new PerspectiveCamera(32, 1, 0.1, 60);
+      camera.position.set(2.85, 1.28, 3.55);
       var renderer = new WebGLRenderer({ antialias: true, alpha: true });
       renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = PCFSoftShadowMap;
       renderer.toneMapping = ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.05;
+      renderer.toneMappingExposure = 1.18;
       renderer.outputColorSpace = SRGBColorSpace;
+      renderer.localClippingEnabled = true;
       view.appendChild(renderer.domElement);
       document.getElementById("boot")?.remove();
       var pmrem = new PMREMGenerator(renderer);
       scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+      new RGBELoader().load("./studio.hdr", (tex) => {
+        const env = pmrem.fromEquirectangular(tex).texture;
+        scene.environment = env;
+        tex.dispose();
+        renderer.toneMappingExposure = 1.08;
+      });
       var controls = new OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
       controls.enablePan = false;
-      controls.target.set(0, 0.25, 0);
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 0.55;
+      controls.target.set(0, 0.18, 0);
       controls.maxDistance = 6.5;
-      controls.minDistance = 2.6;
-      controls.maxPolarAngle = Math.PI * 0.48;
-      controls.minPolarAngle = Math.PI * 0.18;
-      scene.add(new HemisphereLight(15920870, 12893618, 0.55));
-      var key = new DirectionalLight(16774890, 1.05);
-      key.position.set(2.6, 5.5, 3.2);
+      controls.minDistance = 2.4;
+      controls.maxPolarAngle = Math.PI * 0.49;
+      controls.minPolarAngle = Math.PI * 0.16;
+      renderer.domElement.addEventListener("pointerdown", () => {
+        controls.autoRotate = false;
+      });
+      scene.add(new HemisphereLight(16775150, 12037795, 0.28));
+      var key = new DirectionalLight(16774374, 0.85);
+      key.position.set(3.2, 6.2, 2.4);
       key.castShadow = true;
-      key.shadow.mapSize.set(1024, 1024);
+      key.shadow.mapSize.set(2048, 2048);
+      key.shadow.camera.near = 1;
+      key.shadow.camera.far = 18;
+      key.shadow.camera.left = -5;
+      key.shadow.camera.right = 5;
+      key.shadow.camera.top = 5;
+      key.shadow.camera.bottom = -5;
+      key.shadow.bias = -4e-4;
       scene.add(key);
-      var rim = new DirectionalLight(14279402, 0.35);
-      rim.position.set(-3.5, 1.8, -2.5);
+      var rim = new DirectionalLight(14148848, 0.45);
+      rim.position.set(-4.2, 2.2, -2.8);
       scene.add(rim);
-      var floor = new Mesh(new CircleGeometry(5.5, 64), new MeshStandardMaterial({
-        color: 14999510,
-        metalness: 0.04,
-        roughness: 0.92
-      }));
+      var fill = new DirectionalLight(16775922, 0.22);
+      fill.position.set(-1.2, 4.5, 4.5);
+      scene.add(fill);
+      var floor = new Mesh(
+        new CircleGeometry(7.5, 72),
+        new MeshStandardMaterial({ color: 15328216, metalness: 0.02, roughness: 0.86 })
+      );
       floor.rotation.x = -HALF_PI;
       floor.position.y = -2.2;
       floor.receiveShadow = true;
       scene.add(floor);
+      var blob = new Mesh(
+        new CircleGeometry(1.85, 48),
+        new MeshBasicMaterial({ color: 2893858, transparent: true, opacity: 0.16, depthWrite: false })
+      );
+      blob.rotation.x = -HALF_PI;
+      blob.position.y = -2.18;
+      scene.add(blob);
       var engine = buildEngine();
       scene.add(engine);
       var missing = PARTS.filter((p) => !nodes.has(p.id)).map((p) => p.id);
@@ -23343,6 +23964,23 @@ void main() {
       resize();
       function copyOf(id) {
         return byId[id][state.lang];
+      }
+      function applyCutaway(on) {
+        state.cutaway = on;
+        for (const id of SHELL) {
+          const g = nodes.get(id);
+          if (!g) continue;
+          g.traverse((o) => {
+            if (!o.isMesh || !o.material) return;
+            if (!o.userData._baseEmissive) {
+              o.material = o.material.clone();
+              o.userData._baseEmissive = o.material.emissive.clone();
+            }
+            o.material.clippingPlanes = on ? [clipPlane] : [];
+            o.material.clipShadows = on;
+            o.material.needsUpdate = true;
+          });
+        }
       }
       function tint(id, hover, selected) {
         const g = nodes.get(id);
@@ -23449,6 +24087,8 @@ void main() {
         document.querySelector("#explodeLabel").textContent = ui.explode;
         document.querySelector("#subtitle").textContent = ui.subtitle;
         toggleExplode.textContent = state.targetExplode > 0.5 ? ui.assembleBtn : ui.explodeBtn;
+        toggleCut.textContent = state.cutaway ? ui.solidBtn : ui.cutBtn;
+        toggleCut.setAttribute("aria-pressed", state.cutaway ? "true" : "false");
         langFr.setAttribute("aria-pressed", state.lang === "fr" ? "true" : "false");
         langEn.setAttribute("aria-pressed", state.lang === "en" ? "true" : "false");
         renderCard();
@@ -23462,6 +24102,11 @@ void main() {
         state.targetExplode = state.targetExplode > 0.4 ? 0 : 0.92;
         explodeEl.value = String(Math.round(state.targetExplode * 100));
         toggleExplode.textContent = state.targetExplode > 0.5 ? UI[state.lang].assembleBtn : UI[state.lang].explodeBtn;
+      });
+      toggleCut.addEventListener("click", () => {
+        applyCutaway(!state.cutaway);
+        toggleCut.textContent = state.cutaway ? UI[state.lang].solidBtn : UI[state.lang].cutBtn;
+        toggleCut.setAttribute("aria-pressed", state.cutaway ? "true" : "false");
       });
       langFr.addEventListener("click", () => {
         state.lang = "fr";
@@ -23482,6 +24127,7 @@ void main() {
         requestAnimationFrame(tick);
       }
       syncChrome();
+      applyCutaway(true);
       tick();
     }
   });
