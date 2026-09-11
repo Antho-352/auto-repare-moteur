@@ -784,3 +784,14 @@ window.addEventListener("message", (ev) => {
   }
 });
 tick();
+
+function reportHeight() {
+  const h = Math.ceil(document.documentElement.scrollHeight || document.body.scrollHeight);
+  if (h > 0) parent.postMessage({ type: "engine-height", height: h }, "*");
+}
+if (document.documentElement.classList.contains("embed") || new URLSearchParams(location.search).has("embed")) {
+  new ResizeObserver(reportHeight).observe(document.documentElement);
+  window.addEventListener("load", reportHeight);
+  setTimeout(reportHeight, 400);
+  setTimeout(reportHeight, 1200);
+}

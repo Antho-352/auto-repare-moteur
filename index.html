@@ -29,6 +29,10 @@
     html.embed .lang { display: none; }
     html.embed .hint { display: none; }
     html.embed .controls { margin-left: 0; }
+    @media (max-width: 980px) {
+      html.embed, html.embed body, html.embed .app { height: auto; min-height: 100%; }
+      html.embed .card { overflow: visible; height: auto; }
+    }
     html.focus-part .rail,
     html.focus-part .card { display: none; }
     html.focus-part .stage { grid-template-columns: 1fr; }
@@ -265,7 +269,7 @@
       .group-label,
       .part { display: none !important; }
       #filter { width: calc(100% - 12px); margin: 0 6px; }
-      .card { border-left: 0; border-top: 1px solid var(--line); }
+      .card { border-left: 0; border-top: 1px solid var(--line); overflow: visible; height: auto; }
       .hint { display: none; }
     }
   </style>

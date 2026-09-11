@@ -11586,7 +11586,7 @@
           } else {
             _target.set(x, y, z);
           }
-          const parent = this.parent;
+          const parent2 = this.parent;
           this.updateWorldMatrix(true, false);
           _position$3.setFromMatrixPosition(this.matrixWorld);
           if (this.isCamera || this.isLight) {
@@ -11595,8 +11595,8 @@
             _m1$3.lookAt(_target, _position$3, this.up);
           }
           this.quaternion.setFromRotationMatrix(_m1$3);
-          if (parent) {
-            _m1$3.extractRotation(parent.matrixWorld);
+          if (parent2) {
+            _m1$3.extractRotation(parent2.matrixWorld);
             _q1.setFromRotationMatrix(_m1$3);
             this.quaternion.premultiply(_q1.invert());
           }
@@ -11644,9 +11644,9 @@
           return this;
         }
         removeFromParent() {
-          const parent = this.parent;
-          if (parent !== null) {
-            parent.remove(this);
+          const parent2 = this.parent;
+          if (parent2 !== null) {
+            parent2.remove(this);
           }
           return this;
         }
@@ -11733,10 +11733,10 @@
           }
         }
         traverseAncestors(callback) {
-          const parent = this.parent;
-          if (parent !== null) {
-            callback(parent);
-            parent.traverseAncestors(callback);
+          const parent2 = this.parent;
+          if (parent2 !== null) {
+            callback(parent2);
+            parent2.traverseAncestors(callback);
           }
         }
         updateMatrix() {
@@ -11763,9 +11763,9 @@
           }
         }
         updateWorldMatrix(updateParents, updateChildren) {
-          const parent = this.parent;
-          if (updateParents === true && parent !== null) {
-            parent.updateWorldMatrix(true, false);
+          const parent2 = this.parent;
+          if (updateParents === true && parent2 !== null) {
+            parent2.updateWorldMatrix(true, false);
           }
           if (this.matrixAutoUpdate) this.updateMatrix();
           if (this.matrixWorldAutoUpdate === true) {
@@ -16853,11 +16853,11 @@ void main() {
               camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
             }
           }
-          function updateCamera(camera, parent) {
-            if (parent === null) {
+          function updateCamera(camera, parent2) {
+            if (parent2 === null) {
               camera.matrixWorld.copy(camera.matrix);
             } else {
-              camera.matrixWorld.multiplyMatrices(parent.matrixWorld, camera.matrix);
+              camera.matrixWorld.multiplyMatrices(parent2.matrixWorld, camera.matrix);
             }
             camera.matrixWorldInverse.copy(camera.matrixWorld).invert();
           }
@@ -16882,24 +16882,24 @@ void main() {
             cameraL.layers.mask = camera.layers.mask | 2;
             cameraR.layers.mask = camera.layers.mask | 4;
             cameraXR.layers.mask = cameraL.layers.mask | cameraR.layers.mask;
-            const parent = camera.parent;
+            const parent2 = camera.parent;
             const cameras2 = cameraXR.cameras;
-            updateCamera(cameraXR, parent);
+            updateCamera(cameraXR, parent2);
             for (let i = 0; i < cameras2.length; i++) {
-              updateCamera(cameras2[i], parent);
+              updateCamera(cameras2[i], parent2);
             }
             if (cameras2.length === 2) {
               setProjectionFromUnion(cameraXR, cameraL, cameraR);
             } else {
               cameraXR.projectionMatrix.copy(cameraL.projectionMatrix);
             }
-            updateUserCamera(camera, cameraXR, parent);
+            updateUserCamera(camera, cameraXR, parent2);
           };
-          function updateUserCamera(camera, cameraXR2, parent) {
-            if (parent === null) {
+          function updateUserCamera(camera, cameraXR2, parent2) {
+            if (parent2 === null) {
               camera.matrix.copy(cameraXR2.matrixWorld);
             } else {
-              camera.matrix.copy(parent.matrixWorld);
+              camera.matrix.copy(parent2.matrixWorld);
               camera.matrix.invert();
               camera.matrix.multiply(cameraXR2.matrixWorld);
             }
@@ -23535,11 +23535,11 @@ void main() {
         });
         return root;
       }
-      function add(parent, geo, material, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0) {
+      function add(parent2, geo, material, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0) {
         const m = new Mesh(geo, material);
         m.position.set(x, y, z);
         m.rotation.set(rx, ry, rz);
-        parent.add(m);
+        parent2.add(m);
         return m;
       }
       var box = (w, h, d, r = 0.04) => new RoundedBoxGeometry(w, h, d, 3, Math.min(w, h, d, r));
@@ -23548,19 +23548,19 @@ void main() {
       var hex = (r, h) => new CylinderGeometry(r, r, h, 6);
       var CX = [-0.84, -0.28, 0.28, 0.84];
       var HALF_PI = Math.PI / 2;
-      function bolt(parent, x, y, z, r = 0.022, h = 0.036) {
-        add(parent, hex(r, h), mat.steel, x, y, z);
+      function bolt(parent2, x, y, z, r = 0.022, h = 0.036) {
+        add(parent2, hex(r, h), mat.steel, x, y, z);
       }
-      function hoseTo(parent, pts, r = 0.035, material = mat.hose) {
-        parent.add(new Mesh(new TubeGeometry(new CatmullRomCurve3(pts), 24, r, 8, false), material));
+      function hoseTo(parent2, pts, r = 0.035, material = mat.hose) {
+        parent2.add(new Mesh(new TubeGeometry(new CatmullRomCurve3(pts), 24, r, 8, false), material));
       }
-      function toothedPulley(parent, x, y, z, R, thick, teeth, rx = 0, ry = 0, rz = HALF_PI) {
-        add(parent, cyl(R, thick, 32), mat.steel, x, y, z, rx, ry, rz);
+      function toothedPulley(parent2, x, y, z, R, thick, teeth, rx = 0, ry = 0, rz = HALF_PI) {
+        add(parent2, cyl(R, thick, 32), mat.steel, x, y, z, rx, ry, rz);
         for (let i = 0; i < teeth; i++) {
           const a = i / teeth * Math.PI * 2;
           const px2 = x + Math.cos(a) * (R + 0.012);
           const py2 = y + Math.sin(a) * (R + 0.012);
-          add(parent, box(0.018, 0.022, thick * 0.7, 4e-3), mat.steel, px2, py2, z);
+          add(parent2, box(0.018, 0.022, thick * 0.7, 4e-3), mat.steel, px2, py2, z);
         }
       }
       function buildEngine() {
@@ -24166,6 +24166,16 @@ void main() {
         }
       });
       tick();
+      function reportHeight() {
+        const h = Math.ceil(document.documentElement.scrollHeight || document.body.scrollHeight);
+        if (h > 0) parent.postMessage({ type: "engine-height", height: h }, "*");
+      }
+      if (document.documentElement.classList.contains("embed") || new URLSearchParams(location.search).has("embed")) {
+        new ResizeObserver(reportHeight).observe(document.documentElement);
+        window.addEventListener("load", reportHeight);
+        setTimeout(reportHeight, 400);
+        setTimeout(reportHeight, 1200);
+      }
     }
   });
   require_main();
