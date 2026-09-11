@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Liquide de refroidissement noir — parcours</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet" />
+  <style>
+    :root { --ink:#121210; --paper:#f0ede7; --red:#c24a1c; --deep:#8a2c16; --cream:#ece8e1; --lime:#d9dd93; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--ink); color: var(--paper); font-family: "Source Serif 4", Georgia, serif; }
+    a { color: inherit; }
+    button { font-family: inherit; cursor: pointer; }
+    .chrome {
+      height: 52px; display: flex; align-items: center; gap: 18px; padding: 0 18px;
+      border-bottom: 1px solid #2a2926; font-family: "Barlow Condensed", sans-serif;
+    }
+    .brand { font-weight: 800; letter-spacing: .14em; text-decoration: none; font-size: 18px; }
+    .brand em { color: var(--red); font-style: normal; }
+    .chrome span { color: #8a857c; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; margin-left: auto; }
+    .wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+    .hero { padding: 48px 0 20px; }
+    .kicker { font: 700 12px "Barlow Condensed"; letter-spacing: .18em; text-transform: uppercase; color: var(--red); }
+    h1 { font: 800 clamp(40px, 7vw, 72px)/.86 "Barlow Condensed"; text-transform: uppercase; letter-spacing: -.03em; margin: 10px 0 16px; max-width: 16ch; }
+    .lead { font-size: 20px; max-width: 46ch; color: #d8d3c8; }
+    .meta { margin-top: 18px; color: #8a857c; font-size: 14px; }
+    .warn {
+      margin: 28px 0; padding: 16px 18px; border-left: 4px solid var(--lime); background: #1b1a17;
+      font-size: 15px; max-width: 62ch;
+    }
+
+    .play { display: grid; grid-template-columns: 1fr 1fr; min-height: 560px; border: 1px solid #2a2926; }
+    .tree { padding: 28px; background: #171715; }
+    .tree h2 { font: 800 28px/1 "Barlow Condensed"; text-transform: uppercase; margin: 0 0 8px; }
+    .step-n { font: 700 11px "Barlow Condensed"; letter-spacing: .16em; text-transform: uppercase; color: var(--red); }
+    .q { font-size: 22px; margin: 12px 0 22px; }
+    .choices { display: flex; flex-direction: column; gap: 8px; }
+    .choice, .ghost {
+      text-align: left; min-height: 52px; padding: 12px 14px; border: 1px solid #3a3834;
+      background: transparent; color: var(--paper); font-size: 16px;
+      font-family: "Source Serif 4", serif;
+    }
+    .choice:hover { background: var(--red); border-color: var(--red); }
+    .verdict { margin-top: 8px; }
+    .verdict p { color: #d8d3c8; }
+    .engine-pane { background: var(--cream); min-height: 420px; position: relative; }
+    .engine-pane iframe { width: 100%; height: 100%; min-height: 560px; border: 0; display: block; }
+    .parts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .parts button {
+      font: 700 12px "Barlow Condensed"; letter-spacing: .08em; text-transform: uppercase;
+      background: transparent; color: var(--paper); border: 1px solid #555; padding: 8px 10px;
+    }
+    .parts button.on, .parts button:hover { background: var(--lime); color: var(--ink); border-color: var(--lime); }
+
+    .steps { padding: 56px 0; }
+    .steps h2 { font: 800 clamp(36px, 5vw, 56px)/.85 "Barlow Condensed"; text-transform: uppercase; }
+    .lane { display: grid; grid-template-columns: 80px 1fr; gap: 16px; margin: 28px 0; align-items: start; }
+    .num { font: 800 42px "Barlow Condensed"; color: var(--red); }
+    .lane h3 { margin: 0 0 6px; font-size: 22px; }
+    .lane p { margin: 0; color: #c9c3b8; }
+    .stop { background: var(--red); color: #fffaf4; padding: 22px 24px; font-size: 18px; }
+
+    .costs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: #2a2926; margin: 40px 0; }
+    .costs article { background: #171715; padding: 22px; }
+    .costs small { font: 700 11px "Barlow Condensed"; letter-spacing: .14em; text-transform: uppercase; color: var(--red); }
+    .costs b { display: block; font: 800 32px "Barlow Condensed"; margin: 8px 0; }
+    .note { color: #8a857c; font-size: 14px; }
+
+    footer { padding: 28px 0 48px; color: #8a857c; font-family: "Barlow Condensed", sans-serif; letter-spacing: .08em; text-transform: uppercase; font-size: 13px; display: flex; gap: 18px; }
+    @media (max-width: 900px) {
+      .play, .costs { grid-template-columns: 1fr; }
+      .engine-pane iframe { min-height: 420px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="chrome">
+    <a class="brand" href="./b-moteur-full-bleed.html">AUTO<em>·</em>REPARE</a>
+    <span>Prototype article · pas le live</span>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="kicker">Dépannage · circuit de refroidissement</div>
+      <h1>Liquide de refroidissement noir</h1>
+      <p class="lead">Un LDR sain est vif et limpide. Noir, c’est une contamination. On ne « change le liquide et on verra » — on identifie d’abord.</p>
+      <p class="meta">D’après l’article du 24 février 2026 · Julien · <a href="https://auto-repare.com/liquide-de-refroidissement-noir-causes-possibles-et-risques-pour-le-moteur/">version live</a></p>
+      <p class="warn">Ce parcours aide à comprendre. Ce n’est pas un diagnostic, ni l’ordre de tout démonter. Moteur froid, bouchon jamais ouvert à chaud.</p>
+    </section>
+
+    <section class="play" aria-label="Parcours interactif">
+      <div class="tree">
+        <div class="step-n" id="stepn">Question 1 / 3</div>
+        <h2 id="title">Aspect du liquide</h2>
+        <p class="q" id="q"></p>
+        <div class="choices" id="choices"></div>
+        <div class="verdict" id="verdict" hidden></div>
+        <div class="parts" id="parts" hidden>
+          <button type="button" data-part="joint-culasse">Joint de culasse</button>
+          <button type="button" data-part="pompe-eau">Pompe à eau</button>
+          <button type="button" data-part="thermostat">Thermostat</button>
+          <button type="button" data-part="durite-refroidissement">Durite</button>
+          <button type="button" data-part="capteur-temperature">Sonde de température</button>
+        </div>
+      </div>
+      <div class="engine-pane">
+        <iframe id="engine" title="Moteur 3D" src="https://antho-352.github.io/auto-repare-moteur/?embed=1&part=joint-culasse"></iframe>
+      </div>
+    </section>
+
+    <section class="steps">
+      <h2>Ordre réel : voir, mesurer, confirmer.</h2>
+      <div class="lane"><div class="num">01</div><div><h3>Vase, moteur froid</h3><p>Couleur, film irisé, mousse, niveau. Dépôts ou mayonnaise sous le bouchon → piste huile.</p></div></div>
+      <div class="lane"><div class="num">02</div><div><h3>Mesurer avant d’ouvrir</h3><p>Test CO₂ (gaz de combustion dans le LDR) et mise en pression du circuit. L’article insiste : valider avant d’ouvrir le moteur.</p></div></div>
+      <div class="lane"><div class="num">03</div><div><h3>Réparer la cause, puis rincer</h3><p>Changer le liquide sans traiter joint / échangeur / durites ne sert à rien. Puis double rinçage et LDR du carnet — pas un mélange OAT / HOAT / IAT.</p></div></div>
+      <p class="stop">Liquide noir huileux : ne pas continuer à rouler. Risque pompe grippée, culasse déformée. Faire remorquer.</p>
+    </section>
+
+    <section>
+      <h2 style="font:800 42px/1 Barlow Condensed,sans-serif;text-transform:uppercase">Ordres de coût cités dans l’article</h2>
+      <p class="note">Fourchettes de l’article live (pièces + MO). Pas un devis Auto-Repare, ça varie selon le moteur.</p>
+      <div class="costs">
+        <article><small>Joint de culasse</small><b>800 – 1 500 €</b><span>peut dépasser 3 000 € selon moteur</span></article>
+        <article><small>Pompe à eau</small><b>150 – 400 €</b><span>usure / grippage</span></article>
+        <article><small>Échangeur huile/eau</small><b>300 – 800 €</b><span>pas sur le schéma 3D : pièce séparée</span></article>
+      </div>
+      <p class="note">L’échangeur n’est pas sur le moteur pédagogique (40 organes). Suspect fréquent sur certains 1.6 HDi d’après l’article — à confirmer sur le véhicule.</p>
+    </section>
+  </main>
+  <footer class="wrap">
+    <span>© 2026 maquette</span>
+    <a href="https://auto-repare.com/liquide-de-refroidissement-noir-causes-possibles-et-risques-pour-le-moteur/">Article source</a>
+    <a href="./b-moteur-full-bleed.html">Home B</a>
+  </footer>
+
+  <script>
+    const ENGINE = "https://antho-352.github.io/auto-repare-moteur/?embed=1&part=";
+    const tree = {
+      start: {
+        n: "Question 1 / 3",
+        title: "Aspect du liquide",
+        q: "Moteur froid, vase ouvert : le liquide est plutôt…",
+        choices: [
+          { t: "Noir huileux, film irisé, parfois mayonnaise", next: "huile" },
+          { t: "Noir / brun boueux, pas d’huile", next: "boue" },
+          { t: "Encore vif et limpide (rose, vert, jaune, bleu)", next: "ok" }
+        ]
+      },
+      huile: {
+        n: "Question 2 / 3",
+        title: "Piste huile dans le LDR",
+        q: "Joint de culasse ou échangeur huile/eau : on ne tranche pas au feeling. Qu’est-ce qui oriente ?",
+        choices: [
+          { t: "Mousse / bulles à chaud, perte de niveau, voyant température", next: "joint" },
+          { t: "Moins de gaz, plutôt une perte de pression du circuit", next: "echangeur" }
+        ]
+      },
+      boue: {
+        n: "Question 2 / 3",
+        title: "Piste corrosion / mélange / durites",
+        q: "Sans huile, le noir vient souvent des dépôts. Quelle piste collerait ?",
+        choices: [
+          { t: "Durites poreuses, particules de caoutchouc", next: "durite" },
+          { t: "LDR trop vieux ou mélange de familles (OAT / HOAT / IAT)", next: "melange" }
+        ]
+      },
+      ok: {
+        done: true,
+        n: "Fin",
+        title: "Rien d’urgent sur la couleur",
+        html: "<p>L’article : un LDR sain reste vif et limpide. Contrôle visuel semestriel, vidange selon le carnet (souvent 2 à 4 ans). Ce parcours ne remplace pas une température anormale ou une perte de niveau.</p>",
+        part: "thermostat"
+      },
+      joint: {
+        done: true,
+        n: "Piste",
+        title: "Joint de culasse à confirmer",
+        html: "<p>Cause fréquente et grave d’après l’article. <strong>Test CO₂</strong> avant d’ouvrir. Réparer la cause, puis rinçage — pas l’inverse. Ne pas rouler.</p>",
+        part: "joint-culasse"
+      },
+      echangeur: {
+        done: true,
+        n: "Piste",
+        title: "Échangeur huile/eau",
+        html: "<p>Même mélange huile/LDR, autre pièce. L’article cite des 1.6 HDi aux joints d’échangeur fatigués. Pas sur le schéma 3D : on montre le joint / la pompe, qui prennent aussi si on continue.</p>",
+        part: "pompe-eau"
+      },
+      durite: {
+        done: true,
+        n: "Piste",
+        title: "Durites et boues",
+        html: "<p>Morceaux de durite et corrosion colorent le LDR. Changer les durites fatiguées, rincer, remplir avec le LDR du carnet.</p>",
+        part: "durite-refroidissement"
+      },
+      melange: {
+        done: true,
+        n: "Piste",
+        title: "Liquide incompatible ou trop vieux",
+        html: "<p>Les familles ne se mélangent pas. Au doute : vidanger, repartir sur le produit certifié. Intervalle exact = constructeur.</p>",
+        part: "thermostat"
+      }
+    };
+
+    const qEl = document.getElementById("q");
+    const titleEl = document.getElementById("title");
+    const stepn = document.getElementById("stepn");
+    const choices = document.getElementById("choices");
+    const verdict = document.getElementById("verdict");
+    const parts = document.getElementById("parts");
+    const iframe = document.getElementById("engine");
+
+    function showPart(id) {
+      iframe.src = ENGINE + encodeURIComponent(id);
+      parts.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.part === id));
+    }
+
+    function go(id) {
+      const node = tree[id];
+      stepn.textContent = node.n;
+      titleEl.textContent = node.title;
+      choices.innerHTML = "";
+      verdict.hidden = true;
+      if (node.done) {
+        qEl.textContent = "";
+        verdict.hidden = false;
+        verdict.innerHTML = node.html + '<p><button class="ghost" type="button" id="restart">Recommencer le parcours</button></p>';
+        document.getElementById("restart").onclick = () => go("start");
+        parts.hidden = false;
+        showPart(node.part);
+        return;
+      }
+      qEl.textContent = node.q;
+      parts.hidden = true;
+      node.choices.forEach((c) => {
+        const b = document.createElement("button");
+        b.className = "choice";
+        b.type = "button";
+        b.textContent = c.t;
+        b.onclick = () => go(c.next);
+        choices.appendChild(b);
+      });
+    }
+
+    parts.addEventListener("click", (e) => {
+      const id = e.target.dataset.part;
+      if (id) showPart(id);
+    });
+    go("start");
+  </script>
+</body>
+</html>

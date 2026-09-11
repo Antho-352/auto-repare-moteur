@@ -657,9 +657,10 @@ function renderRail() {
   }
 }
 
-function select(id) {
+function select(id, opts = {}) {
+  if (!id || !nodes.has(id)) return;
   const prev = state.selected;
-  state.selected = id === state.selected ? null : id;
+  state.selected = !opts.force && id === state.selected ? null : id;
   if (prev) tint(prev, state.hover === prev, false);
   if (state.selected) tint(state.selected, false, true);
   renderCard();
@@ -745,4 +746,14 @@ function tick() {
 
 syncChrome();
 applyCutaway(true);
+const bootPart = new URLSearchParams(location.search).get("part");
+if (bootPart && nodes.has(bootPart)) {
+  select(bootPart, { force: true });
+  state.targetExplode = 0.42;
+  explodeEl.value = "42";
+}
+window.addEventListener("message", (ev) => {
+  const id = ev.data && ev.data.part;
+  if (typeof id === "string" && nodes.has(id)) select(id, { force: true });
+});
 tick();
