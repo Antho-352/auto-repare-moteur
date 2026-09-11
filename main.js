@@ -56,6 +56,10 @@ const mat = {
   filter: std(0x303030, 0.12, 0.7),
   gasket: std(0x3a3530, 0.04, 0.88),
   hose: std(0x2c2c2a, 0.05, 0.82),
+  paint: std(0xc5cdd3, 0.35, 0.32),
+  ring: std(0x6a6e72, 0.55, 0.4),
+  brass: std(0xb08d4a, 0.7, 0.32),
+  boot: std(0x141414, 0.04, 0.85),
 };
 
 function tag(root, id) {
@@ -78,24 +82,29 @@ function add(parent, geo, material, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0)
   return m;
 }
 
-const box = (w, h, d) => new RoundedBoxGeometry(w, h, d, 2, Math.min(w, h, d) * 0.06);
-const cyl = (r, h, s = 20) => new THREE.CylinderGeometry(r, r, h, s);
-const cyl2 = (rt, rb, h, s = 16) => new THREE.CylinderGeometry(rt, rb, h, s);
+const box = (w, h, d, r = 0.04) => new RoundedBoxGeometry(w, h, d, 3, Math.min(w, h, d, r));
+const cyl = (r, h, s = 28) => new THREE.CylinderGeometry(r, r, h, s);
+const cyl2 = (rt, rb, h, s = 24) => new THREE.CylinderGeometry(rt, rb, h, s);
+const hex = (r, h) => new THREE.CylinderGeometry(r, r, h, 6);
 const CX = [-0.84, -0.28, 0.28, 0.84];
 const HALF_PI = Math.PI / 2;
 
-function beltPath(cx, cy, r1, r2, gap, thick = 0.035) {
-  const pts = [];
-  for (let i = 0; i <= 24; i++) {
-    const a = Math.PI * 0.15 + (Math.PI * 1.7 * i) / 24;
-    pts.push(new THREE.Vector3(cx, cy + Math.sin(a) * r1, Math.cos(a) * r1));
+function bolt(parent, x, y, z, r = 0.022, h = 0.036) {
+  add(parent, hex(r, h), mat.steel, x, y, z);
+}
+
+function hoseTo(parent, pts, r = 0.035, material = mat.hose) {
+  parent.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 24, r, 8, false), material));
+}
+
+function toothedPulley(parent, x, y, z, R, thick, teeth, rx = 0, ry = 0, rz = HALF_PI) {
+  add(parent, cyl(R, thick, 32), mat.steel, x, y, z, rx, ry, rz);
+  for (let i = 0; i < teeth; i++) {
+    const a = (i / teeth) * Math.PI * 2;
+    const px = x + Math.cos(a) * (R + 0.012);
+    const py = y + Math.sin(a) * (R + 0.012);
+    add(parent, box(0.018, 0.022, thick * 0.7, 0.004), mat.steel, px, py, z);
   }
-  for (let i = 0; i <= 24; i++) {
-    const a = -Math.PI * 0.15 - (Math.PI * 1.7 * i) / 24;
-    pts.push(new THREE.Vector3(cx, cy - gap + Math.sin(a) * r2, Math.cos(a) * r2));
-  }
-  const curve = new THREE.CatmullRomCurve3(pts, true);
-  return new THREE.TubeGeometry(curve, 80, thick, 8, true);
 }
 
 function buildEngine() {
@@ -110,271 +119,346 @@ function buildEngine() {
   };
 
   const bloc = new THREE.Group();
-  add(bloc, box(2.2, 1.02, 1.22), mat.iron);
-  add(bloc, box(2.05, 0.22, 1.32), mat.iron, 0, 0.12, 0);
-  for (const x of [-1.05, 1.05]) add(bloc, box(0.12, 0.7, 1.05), mat.iron, x, -0.05, 0);
-  for (const x of CX) add(bloc, cyl(0.23, 0.85, 18), mat.alu2, x, 0.12, 0);
+  add(bloc, box(2.18, 0.92, 1.18, 0.05), mat.iron);
+  add(bloc, box(2.08, 0.28, 1.28, 0.04), mat.iron, 0, 0.38, 0);
+  add(bloc, box(2.02, 0.22, 1.08, 0.03), mat.iron, 0, -0.52, 0);
+  add(bloc, cyl2(0.42, 0.48, 0.16, 28), mat.iron, -1.18, -0.38, 0, 0, 0, HALF_PI);
+  for (const z of [-0.52, 0.52]) {
+    for (const y of [-0.18, 0.22]) add(bloc, box(1.85, 0.045, 0.045, 0.01), mat.iron, 0, y, z);
+  }
+  for (const x of CX) {
+    add(bloc, cyl(0.255, 0.08, 28), mat.alu2, x, 0.48, 0);
+    add(bloc, cyl(0.22, 0.82, 28), mat.alu2, x, 0.08, 0);
+  }
+  for (const x of [-0.95, 0.95]) {
+    add(bloc, cyl(0.06, 0.02, 16), mat.steel, x, 0.05, 0.6, HALF_PI, 0, 0);
+  }
+  for (const x of [-0.9, -0.3, 0.3, 0.9]) {
+    bolt(bloc, x, 0.52, 0.52);
+    bolt(bloc, x, 0.52, -0.52);
+  }
   put("bloc-cylindres", bloc);
 
   const head = new THREE.Group();
   head.position.y = 0.72;
-  add(head, box(2.2, 0.42, 1.22), mat.alu);
-  add(head, box(2.05, 0.16, 0.7), mat.alu2, 0, 0.12, -0.12);
+  add(head, box(2.18, 0.4, 1.18, 0.04), mat.alu);
+  add(head, box(2.05, 0.18, 0.62, 0.03), mat.paint, 0, 0.14, -0.16);
+  for (const x of CX) {
+    add(head, cyl(0.09, 0.2, 16), mat.iron, x, -0.02, 0.52, HALF_PI, 0, 0);
+    add(head, cyl(0.08, 0.18, 16), mat.heat, x, -0.02, -0.52, HALF_PI, 0, 0);
+    add(head, cyl(0.045, 0.22, 16), mat.boot, x, 0.22, 0.02);
+  }
+  for (const x of [-0.95, -0.35, 0.35, 0.95]) bolt(head, x, 0.22, 0.5);
   put("culasse", head);
 
   const gasket = new THREE.Group();
   gasket.position.y = 0.51;
-  add(gasket, box(2.18, 0.035, 1.2), mat.gasket);
+  add(gasket, box(2.16, 0.028, 1.16, 0.01), mat.gasket);
+  for (const x of CX) add(gasket, cyl(0.24, 0.03, 20), mat.gasket, x, 0, 0);
   put("joint-culasse", gasket);
 
   const cover = new THREE.Group();
-  cover.position.y = 1.02;
-  add(cover, box(2.05, 0.18, 1.02), mat.black);
-  add(cover, cyl2(0.07, 0.09, 0.08, 12), mat.black, -0.7, 0.12, 0);
+  cover.position.y = 1.04;
+  add(cover, box(2.02, 0.16, 0.98, 0.05), mat.paint);
+  for (let i = 0; i < 7; i++) add(cover, box(1.7, 0.012, 0.035, 0.004), mat.alu, 0, 0.09, -0.32 + i * 0.1);
+  add(cover, cyl2(0.07, 0.09, 0.07, 16), mat.black, -0.72, 0.12, 0);
+  add(cover, cyl(0.05, 0.03, 16), mat.orange, -0.72, 0.16, 0);
+  for (const x of CX) add(cover, cyl(0.05, 0.08, 14), mat.boot, x, 0.02, 0.02);
   put("couvre-culasse", cover);
 
   const timingCover = new THREE.Group();
-  timingCover.position.set(1.28, 0.15, 0);
-  add(timingCover, box(0.16, 1.55, 1.15), mat.plastic);
+  timingCover.position.set(1.3, 0.18, 0);
+  add(timingCover, box(0.14, 1.62, 1.12, 0.04), mat.plastic);
+  add(timingCover, cyl(0.42, 0.12, 28), mat.plastic, 0.02, -0.58, 0, 0, 0, HALF_PI);
+  add(timingCover, cyl(0.38, 0.12, 28), mat.plastic, 0.02, 0.58, -0.16, 0, 0, HALF_PI);
+  bolt(timingCover, 0.08, 0.7, 0.42);
+  bolt(timingCover, 0.08, -0.7, 0.42);
   put("carter-distribution", timingCover);
 
   const pan = new THREE.Group();
-  pan.position.y = -0.72;
-  add(pan, box(1.95, 0.38, 1.02), mat.steel);
-  add(pan, cyl2(0.07, 0.07, 0.08, 12), mat.steel, 0.7, -0.22, 0.2, HALF_PI, 0, 0);
+  pan.position.y = -0.78;
+  add(pan, box(1.92, 0.16, 1.05, 0.03), mat.steel, 0, 0.12, 0);
+  add(pan, box(1.55, 0.28, 0.82, 0.04), mat.steel, 0, -0.08, 0);
+  add(pan, hex(0.055, 0.07), mat.steel, 0.62, -0.22, 0.18);
+  for (const x of [-0.7, 0, 0.7]) bolt(pan, x, 0.2, 0.48);
   put("carter-huile", pan);
 
   const pistons = new THREE.Group();
   for (const x of CX) {
-    add(pistons, cyl(0.21, 0.22, 16), mat.alu, x, 0.18, 0);
-    add(pistons, cyl(0.22, 0.06, 16), mat.steel, x, 0.08, 0);
+    add(pistons, cyl(0.205, 0.16, 28), mat.alu, x, 0.22, 0);
+    add(pistons, cyl(0.198, 0.2, 28), mat.alu2, x, 0.06, 0);
+    add(pistons, cyl(0.212, 0.018, 28), mat.ring, x, 0.26, 0);
+    add(pistons, cyl(0.212, 0.014, 28), mat.ring, x, 0.23, 0);
+    add(pistons, cyl(0.212, 0.014, 28), mat.ring, x, 0.2, 0);
+    add(pistons, cyl(0.05, 0.28, 16), mat.steel, x, 0.08, 0, 0, 0, HALF_PI);
   }
   put("pistons", pistons);
 
   const rods = new THREE.Group();
   for (const x of CX) {
-    add(rods, box(0.08, 0.55, 0.12), mat.steel, x, -0.18, 0);
-    add(rods, cyl(0.1, 0.1, 12), mat.steel, x, -0.48, 0, 0, 0, HALF_PI);
+    add(rods, box(0.055, 0.52, 0.09, 0.01), mat.steel, x, -0.2, 0);
+    add(rods, box(0.1, 0.08, 0.14, 0.015), mat.steel, x, 0.08, 0);
+    add(rods, box(0.12, 0.1, 0.16, 0.015), mat.steel, x, -0.48, 0);
+    add(rods, cyl(0.055, 0.16, 16), mat.steel, x, -0.48, 0, 0, 0, HALF_PI);
   }
   put("bielles", rods);
 
   const crank = new THREE.Group();
   crank.position.y = -0.42;
-  add(crank, cyl(0.09, 2.35, 20), mat.steel, 0, 0, 0, 0, 0, HALF_PI);
-  for (const x of CX) add(crank, cyl(0.16, 0.16, 12), mat.steel, x, 0, 0.08, 0, 0, HALF_PI);
-  for (const x of [-1.05, -0.56, 0, 0.56, 1.05]) add(crank, cyl(0.18, 0.08, 14), mat.steel, x, 0, 0, 0, 0, HALF_PI);
+  add(crank, cyl(0.08, 2.32, 24), mat.steel, 0, 0, 0, 0, 0, HALF_PI);
+  CX.forEach((x, i) => {
+    const z = i % 2 === 0 ? 0.11 : -0.11;
+    add(crank, cyl(0.095, 0.18, 18), mat.steel, x, 0, z, 0, 0, HALF_PI);
+    add(crank, box(0.12, 0.28, 0.08, 0.02), mat.steel, x, z > 0 ? -0.12 : 0.12, 0);
+  });
+  for (const x of [-1.08, -0.56, 0, 0.56, 1.08]) add(crank, cyl(0.16, 0.07, 20), mat.steel, x, 0, 0, 0, 0, HALF_PI);
   put("vilebrequin", crank);
 
   const fly = new THREE.Group();
-  fly.position.set(-1.28, -0.42, 0);
-  add(fly, cyl(0.52, 0.1, 28), mat.iron, 0, 0, 0, 0, 0, HALF_PI);
-  add(fly, cyl(0.58, 0.04, 36), mat.steel, -0.07, 0, 0, 0, 0, HALF_PI);
+  fly.position.set(-1.3, -0.42, 0);
+  add(fly, cyl(0.5, 0.09, 40), mat.iron, 0, 0, 0, 0, 0, HALF_PI);
+  add(fly, cyl(0.56, 0.035, 48), mat.steel, -0.06, 0, 0, 0, 0, HALF_PI);
+  for (let i = 0; i < 16; i++) {
+    const a = (i / 16) * Math.PI * 2;
+    add(fly, box(0.04, 0.05, 0.03, 0.005), mat.steel, -0.06, Math.sin(a) * 0.53, Math.cos(a) * 0.53);
+  }
   put("volant-moteur", fly);
 
   const damper = new THREE.Group();
-  damper.position.set(1.22, -0.42, 0);
-  add(damper, cyl(0.28, 0.1, 20), mat.steel, 0, 0, 0, 0, 0, HALF_PI);
-  add(damper, cyl(0.18, 0.12, 16), mat.black, 0.08, 0, 0, 0, 0, HALF_PI);
+  damper.position.set(1.24, -0.42, 0);
+  add(damper, cyl(0.26, 0.08, 28), mat.steel, 0, 0, 0, 0, 0, HALF_PI);
+  add(damper, cyl(0.2, 0.1, 24), mat.rubber, 0.06, 0, 0, 0, 0, HALF_PI);
+  add(damper, cyl(0.14, 0.12, 20), mat.steel, 0.1, 0, 0, 0, 0, HALF_PI);
   put("poulie-vilebrequin", damper);
 
   const cam = new THREE.Group();
-  cam.position.set(0, 0.78, -0.18);
-  add(cam, cyl(0.055, 2.15, 16), mat.steel, 0, 0, 0, 0, 0, HALF_PI);
+  cam.position.set(0, 0.8, -0.16);
+  add(cam, cyl(0.048, 2.12, 20), mat.steel, 0, 0, 0, 0, 0, HALF_PI);
   for (const x of CX) {
-    add(cam, cyl(0.09, 0.08, 12), mat.steel, x - 0.1, 0, 0.02, 0, 0, HALF_PI);
-    add(cam, cyl(0.09, 0.08, 12), mat.steel, x + 0.1, 0, 0.02, 0, 0, HALF_PI);
+    add(cam, cyl(0.085, 0.07, 16), mat.steel, x - 0.1, 0.02, 0.01, 0, 0, HALF_PI);
+    add(cam, cyl(0.085, 0.07, 16), mat.steel, x + 0.1, 0.02, 0.01, 0, 0, HALF_PI);
   }
   put("arbre-cames", cam);
 
   const valves = new THREE.Group();
   for (const x of CX) {
-    add(valves, cyl2(0.05, 0.018, 0.38, 10), mat.steel, x - 0.1, 0.58, 0.16);
-    add(valves, cyl2(0.05, 0.018, 0.38, 10), mat.heat, x + 0.1, 0.58, -0.16);
+    add(valves, cyl2(0.055, 0.016, 0.42, 16), mat.steel, x - 0.1, 0.58, 0.18);
+    add(valves, cyl2(0.055, 0.016, 0.42, 16), mat.heat, x + 0.1, 0.58, -0.18);
   }
   put("soupapes", valves);
 
   const springs = new THREE.Group();
   for (const x of CX) {
-    add(springs, cyl(0.04, 0.12, 10), mat.steel, x - 0.1, 0.9, 0.16);
-    add(springs, cyl(0.04, 0.12, 10), mat.steel, x + 0.1, 0.9, -0.16);
+    for (const [dx, dz] of [[-0.1, 0.18], [0.1, -0.18]]) {
+      add(springs, cyl(0.038, 0.11, 12), mat.steel, x + dx, 0.9, dz);
+      add(springs, cyl(0.042, 0.02, 12), mat.steel, x + dx, 0.96, dz);
+      add(springs, cyl(0.042, 0.02, 12), mat.steel, x + dx, 0.84, dz);
+    }
   }
   put("ressorts-soupapes", springs);
 
   const pulleys = new THREE.Group();
-  add(pulleys, cyl(0.2, 0.08, 22), mat.steel, 1.18, -0.42, 0, 0, 0, HALF_PI);
-  add(pulleys, cyl(0.22, 0.08, 22), mat.steel, 1.18, 0.78, -0.18, 0, 0, HALF_PI);
+  toothedPulley(pulleys, 1.18, -0.42, 0, 0.2, 0.07, 18);
+  toothedPulley(pulleys, 1.18, 0.8, -0.16, 0.22, 0.07, 20);
   put("poulies-distribution", pulleys);
 
   const timingBelt = new THREE.Group();
-  const tb = new THREE.Mesh(cyl(0.01, 0.01), mat.rubber);
-  const shape = [];
-  const top = new THREE.Vector3(1.2, 0.78, -0.18);
-  const bot = new THREE.Vector3(1.2, -0.42, 0);
-  for (let i = 0; i <= 32; i++) {
-    const t = i / 32;
-    const a = t * Math.PI * 2;
-    const ry = 0.62 + Math.cos(a) * 0.02;
-    const y = (top.y + bot.y) / 2 + Math.sin(a) * 0.62;
-    const z = (top.z + bot.z) / 2 + Math.cos(a) * 0.12;
-    shape.push(new THREE.Vector3(1.2, y, z));
+  const tbPts = [];
+  for (let i = 0; i <= 48; i++) {
+    const a = (i / 48) * Math.PI * 2;
+    tbPts.push(new THREE.Vector3(1.2, 0.19 + Math.sin(a) * 0.62, -0.08 + Math.cos(a) * 0.14));
   }
-  const curve = new THREE.CatmullRomCurve3(shape, true);
-  const beltMesh = new THREE.Mesh(new THREE.TubeGeometry(curve, 96, 0.03, 8, true), mat.rubber);
-  timingBelt.add(beltMesh);
-  tb.visible = false;
-  timingBelt.add(tb);
+  timingBelt.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(tbPts, true), 96, 0.028, 8, true), mat.rubber));
   put("courroie-distribution", timingBelt);
 
   const tensioner = new THREE.Group();
-  tensioner.position.set(1.18, 0.18, 0.22);
-  add(tensioner, cyl(0.09, 0.07, 16), mat.black, 0, 0, 0, 0, 0, HALF_PI);
-  add(tensioner, cyl(0.04, 0.08, 10), mat.steel, 0, 0, 0, 0, 0, HALF_PI);
+  tensioner.position.set(1.18, 0.18, 0.24);
+  add(tensioner, cyl(0.095, 0.06, 20), mat.black, 0, 0, 0, 0, 0, HALF_PI);
+  add(tensioner, cyl(0.04, 0.08, 12), mat.steel, 0, 0, 0, 0, 0, HALF_PI);
   put("galet-tendeur", tensioner);
 
   const oilPump = new THREE.Group();
-  oilPump.position.set(0.55, -0.62, 0.35);
-  add(oilPump, box(0.32, 0.22, 0.28), mat.iron);
-  add(oilPump, cyl(0.06, 0.2, 10), mat.steel, 0, -0.18, 0.05);
+  oilPump.position.set(0.55, -0.62, 0.38);
+  add(oilPump, box(0.34, 0.2, 0.3, 0.03), mat.iron);
+  add(oilPump, cyl(0.07, 0.22, 16), mat.steel, 0, -0.16, 0.04);
+  bolt(oilPump, 0.12, 0.12, 0.12);
   put("pompe-huile", oilPump);
 
   const oilFilter = new THREE.Group();
-  oilFilter.position.set(0.25, -0.35, 0.72);
-  add(oilFilter, cyl(0.12, 0.32, 18), mat.filter, 0, 0, 0, HALF_PI, 0, 0);
-  add(oilFilter, cyl(0.13, 0.04, 16), mat.steel, 0, 0, 0.16, HALF_PI, 0, 0);
+  oilFilter.position.set(0.28, -0.32, 0.74);
+  add(oilFilter, cyl(0.125, 0.34, 24), mat.filter, 0, 0, 0, HALF_PI, 0, 0);
+  add(oilFilter, cyl(0.135, 0.04, 20), mat.steel, 0, 0, 0.17, HALF_PI, 0, 0);
+  for (let i = 0; i < 10; i++) {
+    const a = (i / 10) * Math.PI * 2;
+    add(oilFilter, box(0.01, 0.28, 0.01, 0.002), mat.ring, Math.cos(a) * 0.12, Math.sin(a) * 0.12, 0);
+  }
   put("filtre-huile", oilFilter);
 
   const dip = new THREE.Group();
-  dip.position.set(0.85, 0.15, 0.62);
-  add(dip, cyl(0.012, 0.9, 8), mat.steel, 0, 0.2, 0, 0.25, 0, 0);
-  add(dip, box(0.05, 0.08, 0.02), mat.orange, 0, 0.68, 0.08);
+  dip.position.set(0.88, 0.12, 0.62);
+  add(dip, cyl(0.01, 0.95, 8), mat.steel, 0, 0.22, 0, 0.28, 0, 0);
+  add(dip, box(0.055, 0.09, 0.018, 0.004), mat.orange, 0.02, 0.72, 0.1);
   put("jauge-huile", dip);
 
   const plugs = new THREE.Group();
   for (const x of CX) {
-    add(plugs, cyl(0.028, 0.22, 10), mat.ceramic, x, 1.08, 0.02);
-    add(plugs, cyl(0.035, 0.06, 8), mat.steel, x, 0.96, 0.02);
-    add(plugs, cyl(0.01, 0.05, 8), mat.copper, x, 1.2, 0.02);
+    add(plugs, hex(0.032, 0.05), mat.steel, x, 0.98, 0.02);
+    add(plugs, cyl(0.026, 0.16, 16), mat.ceramic, x, 1.1, 0.02);
+    add(plugs, cyl(0.032, 0.012, 12), mat.ceramic, x, 1.05, 0.02);
+    add(plugs, cyl(0.032, 0.012, 12), mat.ceramic, x, 1.12, 0.02);
+    add(plugs, cyl(0.008, 0.05, 8), mat.copper, x, 1.2, 0.02);
   }
   put("bougies", plugs);
 
   const coils = new THREE.Group();
-  for (const x of CX) add(coils, box(0.12, 0.28, 0.12), mat.plastic, x, 1.32, 0.02);
+  for (const x of CX) {
+    add(coils, box(0.11, 0.22, 0.11, 0.02), mat.plastic, x, 1.34, 0.02);
+    add(coils, cyl2(0.04, 0.028, 0.12, 12), mat.boot, x, 1.18, 0.02);
+  }
   put("bobines", coils);
 
   const injectors = new THREE.Group();
   for (const x of CX) {
-    add(injectors, cyl(0.028, 0.22, 10), mat.steel, x, 0.72, 0.58, 0.7, 0, 0);
-    add(injectors, box(0.06, 0.08, 0.05), mat.plastic, x, 0.84, 0.68);
+    add(injectors, cyl(0.026, 0.2, 14), mat.steel, x, 0.74, 0.58, 0.65, 0, 0);
+    add(injectors, box(0.055, 0.07, 0.045, 0.01), mat.plastic, x, 0.86, 0.68);
   }
   put("injecteurs", injectors);
 
-  const rail = new THREE.Group();
-  rail.position.set(0, 0.88, 0.72);
-  add(rail, cyl(0.035, 2.05, 12), mat.steel, 0, 0, 0, 0, 0, HALF_PI);
-  put("rampe-injection", rail);
+  const railG = new THREE.Group();
+  railG.position.set(0, 0.9, 0.74);
+  add(railG, cyl(0.032, 2.02, 16), mat.steel, 0, 0, 0, 0, 0, HALF_PI);
+  add(railG, cyl(0.04, 0.06, 12), mat.steel, 1.02, 0, 0, 0, 0, HALF_PI);
+  put("rampe-injection", railG);
 
   const intake = new THREE.Group();
-  intake.position.set(0, 0.7, 0.72);
-  add(intake, box(2.05, 0.28, 0.42), mat.plastic);
-  for (const x of CX) add(intake, cyl(0.09, 0.28, 12), mat.plastic, x, 0, -0.28, HALF_PI, 0, 0);
+  intake.position.set(0, 0.7, 0.78);
+  add(intake, box(1.95, 0.26, 0.38, 0.06), mat.plastic);
+  for (const x of CX) {
+    hoseTo(intake, [
+      new THREE.Vector3(x, 0, -0.12),
+      new THREE.Vector3(x, -0.02, -0.28),
+      new THREE.Vector3(x, -0.04, -0.42),
+    ], 0.055, mat.plastic);
+  }
   put("collecteur-admission", intake);
 
   const throttle = new THREE.Group();
-  throttle.position.set(0, 0.72, 1.12);
-  add(throttle, cyl(0.14, 0.16, 16), mat.alu, 0, 0, 0, HALF_PI, 0, 0);
-  add(throttle, box(0.18, 0.12, 0.08), mat.plastic, 0, 0.12, 0);
+  throttle.position.set(0, 0.74, 1.16);
+  add(throttle, cyl(0.145, 0.14, 24), mat.alu, 0, 0, 0, HALF_PI, 0, 0);
+  add(throttle, box(0.16, 0.1, 0.07, 0.015), mat.plastic, 0, 0.12, 0);
+  add(throttle, cyl(0.12, 0.02, 20), mat.boot, 0, 0, 0.08, HALF_PI, 0, 0);
   put("boitier-papillon", throttle);
 
   const exhaust = new THREE.Group();
-  exhaust.position.set(0, 0.55, -0.72);
-  add(exhaust, box(2.0, 0.18, 0.22), mat.rust);
-  for (const x of CX) add(exhaust, cyl(0.07, 0.28, 10), mat.heat, x, 0.05, 0.22, HALF_PI, 0, 0);
-  add(exhaust, cyl2(0.09, 0.12, 0.35, 12), mat.rust, 0.2, -0.05, -0.25, HALF_PI, 0, 0);
+  exhaust.position.set(0, 0.52, -0.7);
+  add(exhaust, box(2.02, 0.08, 0.16, 0.02), mat.rust, 0, 0.12, 0.28);
+  for (const x of CX) {
+    hoseTo(exhaust, [
+      new THREE.Vector3(x, 0.12, 0.32),
+      new THREE.Vector3(x * 0.55, 0.02, 0.02),
+      new THREE.Vector3(0.22, -0.06, -0.38),
+      new THREE.Vector3(0.28, -0.1, -0.58),
+    ], 0.048, mat.heat);
+  }
+  add(exhaust, cyl2(0.09, 0.12, 0.22, 16), mat.rust, 0.3, -0.1, -0.68, HALF_PI, 0, 0);
   put("collecteur-echappement", exhaust);
 
   const lambda = new THREE.Group();
-  lambda.position.set(0.28, 0.42, -1.05);
-  add(lambda, cyl(0.025, 0.16, 10), mat.steel, 0, 0, 0, 0.9, 0, 0);
-  add(lambda, box(0.06, 0.08, 0.04), mat.gold, 0, 0.12, -0.04);
+  lambda.position.set(0.32, 0.38, -1.12);
+  add(lambda, hex(0.028, 0.05), mat.brass, 0, 0, 0, 0.9, 0, 0);
+  add(lambda, cyl(0.02, 0.14, 10), mat.steel, 0, 0.08, -0.04, 0.9, 0, 0);
+  add(lambda, box(0.055, 0.07, 0.035, 0.008), mat.gold, 0, 0.14, -0.06);
   put("sonde-lambda", lambda);
 
   const turbo = new THREE.Group();
-  turbo.position.set(0.55, 0.28, -1.15);
-  add(turbo, cyl(0.18, 0.12, 18), mat.heat, 0, 0, 0, HALF_PI, 0, 0);
-  add(turbo, cyl(0.14, 0.1, 16), mat.alu, 0.16, 0.02, 0.12, HALF_PI, 0.4, 0);
-  add(turbo, cyl2(0.05, 0.08, 0.2, 10), mat.iron, -0.05, -0.12, 0);
+  turbo.position.set(0.58, 0.26, -1.22);
+  add(turbo, new THREE.TorusGeometry(0.13, 0.055, 12, 24, Math.PI * 1.7), mat.heat, 0, 0, 0, HALF_PI, 0, 0.4);
+  add(turbo, cyl(0.1, 0.12, 20), mat.alu, 0.18, 0.04, 0.1, HALF_PI, 0.35, 0);
+  add(turbo, cyl(0.08, 0.08, 16), mat.iron, -0.02, -0.1, 0);
+  add(turbo, cyl2(0.04, 0.07, 0.14, 12), mat.iron, 0.08, -0.16, -0.04);
   put("turbo", turbo);
 
   const waterPump = new THREE.Group();
-  waterPump.position.set(1.05, 0.05, 0.42);
-  add(waterPump, cyl(0.14, 0.12, 16), mat.alu, 0, 0, 0, 0, 0, HALF_PI);
-  add(waterPump, cyl(0.16, 0.04, 16), mat.black, 0.08, 0, 0, 0, 0, HALF_PI);
+  waterPump.position.set(1.05, 0.06, 0.44);
+  add(waterPump, cyl(0.145, 0.1, 24), mat.alu, 0, 0, 0, 0, 0, HALF_PI);
+  add(waterPump, cyl(0.16, 0.035, 20), mat.black, 0.07, 0, 0, 0, 0, HALF_PI);
+  for (let i = 0; i < 6; i++) {
+    const a = (i / 6) * Math.PI * 2;
+    add(waterPump, box(0.04, 0.08, 0.012, 0.004), mat.alu, 0, Math.sin(a) * 0.08, Math.cos(a) * 0.08);
+  }
   put("pompe-eau", waterPump);
 
   const thermo = new THREE.Group();
-  thermo.position.set(0.7, 0.62, 0.62);
-  add(thermo, box(0.22, 0.16, 0.18), mat.alu);
-  add(thermo, cyl(0.05, 0.08, 10), mat.copper, 0, 0.02, 0.08, HALF_PI, 0, 0);
+  thermo.position.set(0.72, 0.64, 0.64);
+  add(thermo, box(0.24, 0.16, 0.2, 0.03), mat.alu);
+  add(thermo, cyl(0.048, 0.09, 14), mat.brass, 0, 0.02, 0.1, HALF_PI, 0, 0);
+  bolt(thermo, 0.08, 0.1, 0.06);
   put("thermostat", thermo);
 
   const hose = new THREE.Group();
-  hose.position.set(0.7, 0.78, 0.82);
-  const hoseCurve = new THREE.CatmullRomCurve3([
+  hose.position.set(0.72, 0.78, 0.82);
+  hoseTo(hose, [
     new THREE.Vector3(0, 0, 0),
-    new THREE.Vector3(0.05, 0.12, 0.18),
-    new THREE.Vector3(0.02, 0.08, 0.38),
-  ]);
-  hose.add(new THREE.Mesh(new THREE.TubeGeometry(hoseCurve, 16, 0.04, 8, false), mat.hose));
+    new THREE.Vector3(0.04, 0.1, 0.16),
+    new THREE.Vector3(0.02, 0.06, 0.36),
+    new THREE.Vector3(-0.02, 0.02, 0.5),
+  ], 0.042);
   put("durite-refroidissement", hose);
 
   const starter = new THREE.Group();
-  starter.position.set(-1.15, -0.55, 0.48);
-  add(starter, cyl(0.12, 0.38, 16), mat.black, 0, 0, 0, 0, 0, HALF_PI);
-  add(starter, cyl(0.07, 0.16, 12), mat.steel, 0.22, 0.08, -0.12, 0.6, 0, 0);
+  starter.position.set(-1.18, -0.52, 0.5);
+  add(starter, cyl(0.125, 0.4, 22), mat.black, 0, 0, 0, 0, 0, HALF_PI);
+  add(starter, cyl(0.07, 0.14, 16), mat.steel, 0.24, 0.1, -0.1, 0.55, 0, 0);
+  add(starter, box(0.16, 0.1, 0.1, 0.02), mat.black, 0.02, 0.12, 0.02);
   put("demarreur", starter);
 
   const alt = new THREE.Group();
-  alt.position.set(1.05, 0.55, 0.58);
-  add(alt, cyl(0.16, 0.22, 16), mat.alu, 0, 0, 0, 0, 0, HALF_PI);
-  add(alt, cyl(0.14, 0.05, 12), mat.black, 0.12, 0, 0, 0, 0, HALF_PI);
+  alt.position.set(1.05, 0.56, 0.6);
+  add(alt, cyl(0.155, 0.2, 24), mat.alu, 0, 0, 0, 0, 0, HALF_PI);
+  add(alt, cyl(0.13, 0.045, 18), mat.black, 0.12, 0, 0, 0, 0, HALF_PI);
+  for (let i = 0; i < 8; i++) {
+    const a = (i / 8) * Math.PI * 2;
+    add(alt, box(0.015, 0.12, 0.04, 0.003), mat.alu, 0, Math.sin(a) * 0.15, Math.cos(a) * 0.15);
+  }
   put("alternateur", alt);
 
   const serp = new THREE.Group();
   const serpPts = [];
-  for (let i = 0; i <= 40; i++) {
-    const t = (i / 40) * Math.PI * 2;
-    serpPts.push(new THREE.Vector3(1.22, 0.1 + Math.sin(t) * 0.48, 0.28 + Math.cos(t) * 0.32));
+  for (let i = 0; i <= 48; i++) {
+    const t = (i / 48) * Math.PI * 2;
+    serpPts.push(new THREE.Vector3(1.24, 0.08 + Math.sin(t) * 0.5, 0.3 + Math.cos(t) * 0.3));
   }
-  serp.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(serpPts, true), 80, 0.025, 8, true), mat.rubber));
+  serp.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(serpPts, true), 96, 0.022, 8, true), mat.rubber));
   put("courroie-accessoires", serp);
 
   const idler = new THREE.Group();
-  idler.position.set(1.12, 0.32, 0.52);
-  add(idler, cyl(0.08, 0.06, 14), mat.black, 0, 0, 0, 0, 0, HALF_PI);
+  idler.position.set(1.14, 0.34, 0.54);
+  add(idler, cyl(0.085, 0.055, 18), mat.black, 0, 0, 0, 0, 0, HALF_PI);
+  add(idler, cyl(0.03, 0.07, 12), mat.steel, 0, 0, 0, 0, 0, HALF_PI);
   put("galet-accessoires", idler);
 
   const ckp = new THREE.Group();
-  ckp.position.set(-1.05, -0.55, -0.38);
-  add(ckp, box(0.08, 0.06, 0.16), mat.plastic);
-  add(ckp, cyl(0.015, 0.1, 8), mat.steel, 0, 0, 0.08, HALF_PI, 0, 0);
+  ckp.position.set(-1.05, -0.52, -0.4);
+  add(ckp, box(0.07, 0.05, 0.14, 0.01), mat.plastic);
+  add(ckp, cyl(0.012, 0.1, 8), mat.steel, 0, 0, 0.08, HALF_PI, 0, 0);
   put("capteur-pmh", ckp);
 
   const cmp = new THREE.Group();
-  cmp.position.set(1.05, 0.9, -0.35);
-  add(cmp, box(0.08, 0.06, 0.14), mat.plastic);
-  add(cmp, cyl(0.015, 0.08, 8), mat.steel, 0, 0, 0.06, HALF_PI, 0, 0);
+  cmp.position.set(1.05, 0.92, -0.34);
+  add(cmp, box(0.07, 0.05, 0.13, 0.01), mat.plastic);
+  add(cmp, cyl(0.012, 0.08, 8), mat.steel, 0, 0, 0.06, HALF_PI, 0, 0);
   put("capteur-arbre-cames", cmp);
 
   const ect = new THREE.Group();
-  ect.position.set(-0.75, 0.72, 0.55);
-  add(ect, cyl(0.03, 0.1, 10), mat.gold, 0, 0, 0, 0.5, 0, 0);
-  add(ect, box(0.06, 0.05, 0.04), mat.plastic, 0, 0.08, 0.04);
+  ect.position.set(-0.75, 0.74, 0.56);
+  add(ect, hex(0.028, 0.06), mat.brass, 0, 0, 0, 0.5, 0, 0);
+  add(ect, box(0.055, 0.045, 0.035, 0.006), mat.plastic, 0, 0.08, 0.04);
   put("capteur-temperature", ect);
 
   const ops = new THREE.Group();
-  ops.position.set(-0.45, -0.22, 0.68);
-  add(ops, cyl(0.03, 0.1, 10), mat.gold, 0, 0, 0, HALF_PI, 0, 0);
-  add(ops, box(0.06, 0.05, 0.04), mat.plastic, 0, 0.02, 0.08);
+  ops.position.set(-0.45, -0.2, 0.7);
+  add(ops, hex(0.028, 0.06), mat.brass, 0, 0, 0, HALF_PI, 0, 0);
+  add(ops, box(0.055, 0.045, 0.035, 0.006), mat.plastic, 0, 0.02, 0.08);
   put("capteur-pression-huile", ops);
 
   return root;
