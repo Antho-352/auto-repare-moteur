@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Auto-Repare — Moteur 4 cylindres</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #10100e;
+      --bg-2: #181714;
+      --panel: #1e1c18;
+      --ink: #f3efe4;
+      --muted: #9b9588;
+      --line: #2e2b26;
+      --accent: #e3a03a;
+      --accent-ink: #1a1408;
+      --hot: #c45a32;
+      --ok: #7a9458;
+      --focus: #f0d9a0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: var(--bg); color: var(--ink); }
+    body {
+      font-family: "IBM Plex Sans", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input { font-family: inherit; }
+    .app {
+      height: 100%;
+      display: grid;
+      grid-template-rows: 58px 1fr;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--line);
+      background: var(--bg-2);
+    }
+    .brand {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+      min-width: 140px;
+    }
+    .brand b { font-size: 13px; letter-spacing: 0.14em; font-weight: 700; }
+    .brand span { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .hint {
+      flex: 1;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .hint kbd {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      border: 1px solid var(--line);
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: var(--ink);
+    }
+    .controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .lang {
+      display: flex;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .lang button, .btn {
+      background: transparent;
+      color: var(--muted);
+      border: 0;
+      height: 34px;
+      padding: 0 12px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    .lang button[aria-pressed="true"] {
+      background: var(--ink);
+      color: var(--accent-ink);
+    }
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel);
+      color: var(--ink);
+    }
+    .btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--accent-ink);
+    }
+    .btn:hover { border-color: var(--accent); }
+    .btn:focus-visible, .lang button:focus-visible, .part:focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 2px;
+    }
+    .explode {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .explode input { width: 110px; accent-color: var(--accent); }
+    .stage {
+      display: grid;
+      grid-template-columns: 228px 1fr minmax(280px, 340px);
+      min-height: 0;
+    }
+    .rail, .card {
+      background: var(--panel);
+      border-right: 1px solid var(--line);
+      overflow: auto;
+      min-height: 0;
+    }
+    .card { border-right: 0; border-left: 1px solid var(--line); padding: 22px; }
+    .rail { padding: 12px 8px 18px; }
+    #filter {
+      width: calc(100% - 12px);
+      margin: 0 6px 10px;
+      height: 32px;
+      border: 1px solid var(--line);
+      background: var(--bg);
+      color: var(--ink);
+      border-radius: 6px;
+      padding: 0 10px;
+      font-size: 13px;
+    }
+    .group-label {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 12px 8px 4px;
+    }
+    .rail h2, .card .kicker {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 500;
+      margin: 4px 8px 10px;
+    }
+    .part {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: 0;
+      color: var(--ink);
+      padding: 9px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      gap: 8px;
+      align-items: baseline;
+      font-size: 13px;
+    }
+    .part:hover { background: #2a2722; }
+    .part[aria-current="true"] { background: #32291c; color: var(--accent); }
+    .part .n {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 10px;
+      color: var(--muted);
+      width: 18px;
+    }
+    #view {
+      position: relative;
+      min-width: 0;
+      background:
+        radial-gradient(1200px 500px at 50% 15%, #2a2418 0%, transparent 55%),
+        var(--bg);
+    }
+    #view canvas { display: block; width: 100%; height: 100%; }
+    .card h1 {
+      font-size: 28px;
+      line-height: 1.1;
+      font-weight: 600;
+      text-wrap: pretty;
+      margin: 8px 0 6px;
+    }
+    .aka { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+    .block { margin-bottom: 16px; }
+    .block h3 {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .block p { font-size: 14.5px; line-height: 1.5; color: #e6e0d4; text-wrap: pretty; }
+    .empty {
+      color: var(--muted);
+      font-size: 14.5px;
+      line-height: 1.55;
+      margin-top: 12px;
+    }
+    .label3d {
+      font-family: "IBM Plex Sans", sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink);
+      background: rgba(16,16,14,0.78);
+      border: 1px solid var(--line);
+      padding: 3px 7px;
+      border-radius: 4px;
+      white-space: nowrap;
+      pointer-events: none;
+      transform: translate(-50%, -120%);
+    }
+    .label3d.on { border-color: var(--accent); color: var(--accent); }
+    @media (max-width: 980px) {
+      .stage { grid-template-columns: 1fr; grid-template-rows: auto 42vh auto; }
+      .rail {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding: 8px;
+      }
+      .rail h2 { display: none; }
+      .part { width: max-content; white-space: nowrap; }
+      .card { border-left: 0; border-top: 1px solid var(--line); }
+      .hint { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <b>AUTO-REPARE</b>
+        <span id="subtitle">Moteur 4 cylindres · 40 pièces</span>
+      </div>
+      <p class="hint" id="hint"></p>
+      <div class="controls">
+        <label class="explode">
+          <span id="explodeLabel">Éclaté</span>
+          <input id="explode" type="range" min="0" max="100" value="0" />
+        </label>
+        <button class="btn" id="toggleExplode" type="button">Exploser</button>
+        <button class="btn" id="readBtn" type="button">Lire</button>
+        <div class="lang" role="group" aria-label="Langue">
+          <button type="button" id="langFr" aria-pressed="true">FR</button>
+          <button type="button" id="langEn" aria-pressed="false">EN</button>
+        </div>
+      </div>
+    </header>
+    <div class="stage">
+      <nav class="rail" id="rail" aria-label="Pièces">
+        <input id="filter" type="search" autocomplete="off" />
+      </nav>
+      <div id="view"></div>
+      <aside class="card" id="card"></aside>
+    </div>
+  </div>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
