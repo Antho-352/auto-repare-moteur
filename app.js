@@ -22667,7 +22667,8 @@ void main() {
           where: "O\xF9 \xE7a se trouve",
           symptom: "Signes fr\xE9quents",
           note: "Les sympt\xF4mes aident \xE0 comprendre, ce n\u2019est pas un diagnostic. L\u2019intervalle exact est celui du constructeur.",
-          subtitle: "Sch\xE9ma \xB7 40 organes"
+          subtitle: "Sch\xE9ma \xB7 40 organes",
+          boot: "Chargement du moteur\u2026"
         },
         en: {
           hint: "Click a part \xB7 drag to rotate",
@@ -22684,7 +22685,8 @@ void main() {
           where: "Where it sits",
           symptom: "Common signs",
           note: "Symptoms help you understand; they are not a diagnosis. Service intervals are the manufacturer\u2019s.",
-          subtitle: "Diagram \xB7 40 parts"
+          subtitle: "Diagram \xB7 40 parts",
+          boot: "Loading engine\u2026"
         }
       };
       PARTS = [
@@ -23461,7 +23463,8 @@ void main() {
       init_RoundedBoxGeometry();
       init_RGBELoader();
       init_data();
-      if (new URLSearchParams(location.search).has("embed")) {
+      var bootParams = new URLSearchParams(location.search);
+      if (bootParams.has("embed")) {
         document.documentElement.classList.add("embed");
       }
       var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -23475,7 +23478,7 @@ void main() {
       var langFr = document.querySelector("#langFr");
       var langEn = document.querySelector("#langEn");
       var state = {
-        lang: "fr",
+        lang: bootParams.get("lang") === "en" ? "en" : "fr",
         explode: 0,
         targetExplode: 0,
         selected: null,
@@ -24147,9 +24150,11 @@ void main() {
         renderer.render(scene, camera);
         requestAnimationFrame(tick);
       }
+      var bootEl = document.querySelector("#boot");
+      if (bootEl) bootEl.textContent = UI[state.lang].boot;
       syncChrome();
       applyCutaway(true);
-      var params = new URLSearchParams(location.search);
+      var params = bootParams;
       var bootPart = params.get("part");
       if (params.has("focus")) document.documentElement.classList.add("focus-part");
       if (bootPart && nodes.has(bootPart)) {
@@ -24159,7 +24164,12 @@ void main() {
         if (params.has("focus")) applyFocus(bootPart);
       }
       window.addEventListener("message", (ev) => {
-        const id = ev.data && ev.data.part;
+        const data = ev.data || {};
+        if (data.lang === "en" || data.lang === "fr") {
+          state.lang = data.lang;
+          syncChrome();
+        }
+        const id = data.part;
         if (typeof id === "string" && nodes.has(id)) {
           select(id, { force: true });
           if (document.documentElement.classList.contains("focus-part")) applyFocus(id);

@@ -29,6 +29,7 @@ export const UI = {
     symptom: "Signes fréquents",
     note: "Les symptômes aident à comprendre, ce n’est pas un diagnostic. L’intervalle exact est celui du constructeur.",
     subtitle: "Schéma · 40 organes",
+    boot: "Chargement du moteur…",
   },
   en: {
     hint: "Click a part · drag to rotate",
@@ -47,6 +48,7 @@ export const UI = {
     symptom: "Common signs",
     note: "Symptoms help you understand; they are not a diagnosis. Service intervals are the manufacturer’s.",
     subtitle: "Diagram · 40 parts",
+    boot: "Loading engine…",
   },
 };
 
