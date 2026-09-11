@@ -1,6 +1,6 @@
 import * as THREE from "three";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { CSS2DRenderer, CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer.js";
 import { GROUPS, UI, PARTS } from "./data.js";
 
 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -393,6 +393,12 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 view.appendChild(renderer.domElement);
+document.getElementById("boot")?.remove();
+window.addEventListener("error", (ev) => {
+  const boot = document.getElementById("boot") || Object.assign(document.createElement("p"), { id: "boot", className: "boot err" });
+  boot.textContent = ev.message || "Erreur de chargement";
+  if (!boot.parentNode) view.appendChild(boot);
+});
 
 const labelRenderer = new CSS2DRenderer();
 labelRenderer.domElement.style.position = "absolute";

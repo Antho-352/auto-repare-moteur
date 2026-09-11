@@ -181,6 +181,18 @@
         var(--bg);
     }
     #view canvas { display: block; width: 100%; height: 100%; }
+    .boot {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 14px;
+      padding: 24px;
+      text-align: center;
+    }
+    .boot.err { color: #e8b4a0; }
     .card h1 {
       font-size: 28px;
       line-height: 1.1;
@@ -261,18 +273,10 @@
       <nav class="rail" id="rail" aria-label="Pièces">
         <input id="filter" type="search" autocomplete="off" />
       </nav>
-      <div id="view"></div>
+      <div id="view"><p class="boot" id="boot">Chargement du moteur…</p></div>
       <aside class="card" id="card"></aside>
     </div>
   </div>
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
-    }
-  }
-  </script>
-  <script type="module" src="./main.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>
