@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thermostat moteur (calorstat) — Auto Repare</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet" />
+  <style>
+    :root { --ink:#171714; --paper:#f4f0e8; --red:#c24a1c; --muted:#5e5a53; --line:#d9d1c4; --cream:#ece8e1; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font-family: "Source Serif 4", Georgia, serif; }
+    a { color: inherit; }
+    .chrome { height: 52px; display: flex; align-items: center; gap: 18px; padding: 0 22px; background: #121210; color: #f0ede7; font-family: "Barlow Condensed", sans-serif; }
+    .brand { font-weight: 800; letter-spacing: .14em; text-decoration: none; }
+    .brand em { color: var(--red); font-style: normal; }
+    .chrome span { margin-left: auto; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: #8a857c; }
+    .wrap { width: min(1100px, calc(100% - 40px)); margin: 0 auto; }
+    .mast { padding: 48px 0 20px; }
+    .kicker { font: 700 12px "Barlow Condensed"; letter-spacing: .18em; text-transform: uppercase; color: var(--red); }
+    h1 { font: 800 clamp(42px, 6vw, 68px)/0.9 "Barlow Condensed"; text-transform: uppercase; letter-spacing: -.03em; margin: 10px 0 14px; max-width: 14ch; }
+    .dek { font-size: 21px; color: var(--muted); max-width: 42ch; }
+    .stage { height: min(62vh, 620px); min-height: 420px; background: var(--cream); border: 1px solid var(--line); }
+    .stage iframe { width: 100%; height: 100%; border: 0; display: block; }
+    .note { font-size: 13px; color: var(--muted); margin: 8px 0 36px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; padding-bottom: 64px; }
+    h2 { font: 800 28px/1 "Barlow Condensed"; text-transform: uppercase; margin: 0 0 12px; }
+    p { font-size: 18px; line-height: 1.5; margin: 0 0 12px; }
+    .warn { background: #121210; color: #f0ede7; padding: 16px 18px; font-size: 15px; }
+    .warn b { color: #d9dd93; font: 700 11px "Barlow Condensed"; letter-spacing: .14em; text-transform: uppercase; display: block; margin-bottom: 8px; }
+    ul { margin: 0; padding-left: 1.1em; }
+    li { margin: 0 0 8px; }
+    .related a { display: block; margin-top: 10px; }
+    footer { padding: 22px; background: #121210; color: #c9c3b8; font-family: "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .08em; font-size: 13px; display: flex; gap: 16px; }
+    @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="chrome">
+    <a class="brand" href="./b-moteur-full-bleed.html">AUTO<em>·</em>REPARE</a>
+    <span>Hub pièce · maquette · pas en prod</span>
+  </header>
+
+  <div class="wrap mast">
+    <div class="kicker">Pièce · refroidissement</div>
+    <h1>Thermostat moteur</h1>
+    <p class="dek">Aussi appelé calorstat. Il reste fermé à froid, puis s’ouvre vers le radiateur. Ce n’est pas le radiateur, ni la sonde.</p>
+  </div>
+
+  <div class="wrap">
+    <div class="stage">
+      <iframe title="Thermostat sur le moteur 3D" src="https://antho-352.github.io/auto-repare-moteur/?embed=1&part=thermostat&focus=1"></iframe>
+    </div>
+    <p class="note">Même modèle pédagogique que la home, mais les autres pièces sont estompées. Schéma 4 cylindres générique — pas le moteur d’un modèle précis.</p>
+  </div>
+
+  <div class="wrap grid">
+    <section>
+      <h2>À quoi ça sert</h2>
+      <p>Fermé, le liquide reste dans le moteur pour qu’il monte en température. Ouvert, le flux passe au radiateur. La température de régime se situe souvent autour de 90 °C — pas sur tous les moteurs, pas une valeur universelle.</p>
+      <p>Sur ce schéma : boîtier en sortie de culasse, avant la durite haute.</p>
+      <div class="warn">
+        <b>Pas un diagnostic</b>
+        Les signes ci-dessous aident à comprendre. L’intervalle de remplacement et le type de thermostat sont ceux du constructeur.
+      </div>
+    </section>
+    <section>
+      <h2>Signes fréquents</h2>
+      <ul>
+        <li>Bloqué fermé : aiguille (ou voyant) trop haut, risque de surchauffe.</li>
+        <li>Bloqué ouvert : moteur qui n’atteint pas sa température, chauffage faible, conso en hausse.</li>
+      </ul>
+      <h2>Sur le site déjà</h2>
+      <p>Pas d’article générique « thermostat » aujourd’hui. La question voisine est un <em>symptôme</em> :</p>
+      <p class="related">
+        <a href="https://auto-repare.com/aiguille-de-temperature-moteur-qui-ne-monte-pas-thermostat-sonde-ou-conduite-trop-courte/">Aiguille de température qui ne monte pas — thermostat, sonde, trajet court</a>
+      </p>
+      <p>Cette fiche-ci viserait l’intention « c’est quoi un thermostat / calorstat ». L’article existant garde l’intention « pourquoi l’aiguille ne monte pas ». On ne fusionne pas les deux.</p>
+    </section>
+  </div>
+
+  <footer>
+    <a href="./article-standard.html">Gabarit article</a>
+    <a href="./b-moteur-full-bleed.html">Home B</a>
+    <span>Données : schéma pédagogique Auto-Repare · pas de km inventé</span>
+  </footer>
+</body>
+</html>

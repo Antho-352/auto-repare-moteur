@@ -576,6 +576,27 @@ function copyOf(id) {
   return byId[id][state.lang];
 }
 
+function applyFocus(id) {
+  for (const [pid, g] of nodes) {
+    const on = !id || pid === id;
+    g.traverse((o) => {
+      if (!o.isMesh || !o.material) return;
+      if (o.userData._focusOp == null) {
+        o.userData._focusOp = o.material.opacity;
+        o.userData._focusTrans = o.material.transparent;
+      }
+      if (!id) {
+        o.material.opacity = o.userData._focusOp;
+        o.material.transparent = o.userData._focusTrans;
+        return;
+      }
+      o.material.transparent = !on;
+      o.material.opacity = on ? 1 : 0.07;
+      o.material.needsUpdate = true;
+    });
+  }
+}
+
 function applyCutaway(on) {
   state.cutaway = on;
   for (const id of SHELL) {
@@ -746,14 +767,20 @@ function tick() {
 
 syncChrome();
 applyCutaway(true);
-const bootPart = new URLSearchParams(location.search).get("part");
+const params = new URLSearchParams(location.search);
+const bootPart = params.get("part");
+if (params.has("focus")) document.documentElement.classList.add("focus-part");
 if (bootPart && nodes.has(bootPart)) {
   select(bootPart, { force: true });
-  state.targetExplode = 0.42;
-  explodeEl.value = "42";
+  state.targetExplode = params.has("focus") ? 0.55 : 0.42;
+  explodeEl.value = String(Math.round(state.targetExplode * 100));
+  if (params.has("focus")) applyFocus(bootPart);
 }
 window.addEventListener("message", (ev) => {
   const id = ev.data && ev.data.part;
-  if (typeof id === "string" && nodes.has(id)) select(id, { force: true });
+  if (typeof id === "string" && nodes.has(id)) {
+    select(id, { force: true });
+    if (document.documentElement.classList.contains("focus-part")) applyFocus(id);
+  }
 });
 tick();
