@@ -1,3 +1,502 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Auto Repare — Le moteur est le site</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet"><style>
-:root{--ink:#121210;--paper:#f0ede7;--soft:#ddd8cf;--red:#9c3d18;--lime:#d9dd93;--line:#363532}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--ink);color:var(--paper);font-family:"Source Serif 4",serif}a{color:inherit}.chrome{height:64px;position:absolute;z-index:20;top:0;left:0;right:0;display:flex;align-items:center;padding:0 28px;border-bottom:1px solid rgba(255,255,255,.22);font-family:"Barlow Condensed",sans-serif}.brand{font-weight:800;font-size:21px;letter-spacing:.13em;text-decoration:none}.brand em{color:#c7582e;font-style:normal}.chrome nav{display:flex;margin-left:auto;gap:22px}.chrome nav a{font-size:13px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none}.chrome nav a:hover{color:#e26f42}.lang{margin-left:25px;border:1px solid #777;background:#171715;color:white;padding:7px 10px;font:600 11px "Barlow Condensed";cursor:pointer}.hero{height:100svh;min-height:760px;position:relative;overflow:hidden;background:#ece8e1}.engine{position:absolute;inset:0}.engine iframe{height:100%;width:100%;border:0}.shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(12,12,10,.92) 0,rgba(12,12,10,.74) 22%,rgba(12,12,10,0) 53%),linear-gradient(0deg,rgba(12,12,10,.72),transparent 28%)}.rail{position:absolute;z-index:4;left:0;top:64px;bottom:0;width:min(420px,36vw);padding:7vh 32px 28px;display:flex;flex-direction:column}.eyebrow{font:600 12px "Barlow Condensed";letter-spacing:.18em;text-transform:uppercase;color:#e06b3d}.rail h1{font:800 clamp(62px,7.2vw,108px)/.79 "Barlow Condensed";letter-spacing:-.035em;text-transform:uppercase;margin:22px 0}.rail p{font-size:18px;line-height:1.45;max-width:30ch;color:#dedbd4}.cta{display:inline-flex;align-items:center;align-self:flex-start;background:#f4f0e9;color:#111;padding:14px 18px;text-decoration:none;font:700 13px "Barlow Condensed";letter-spacing:.1em;text-transform:uppercase;margin-top:18px}.cta:hover{background:#e26f42;color:white}.hint{margin-top:auto;font:600 11px "Barlow Condensed";letter-spacing:.14em;text-transform:uppercase;color:#bbb}.hint:before{content:"↔";font-size:20px;margin-right:9px}.jump{position:absolute;z-index:5;right:25px;bottom:25px;display:flex;gap:2px}.jump a{background:#111;color:white;text-decoration:none;padding:12px 15px;font:600 11px "Barlow Condensed";letter-spacing:.1em;text-transform:uppercase}.mobile-engine{display:none}.ticker{border-top:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;overflow:auto;scrollbar-width:none}.ticker>*{flex:1;min-width:190px;padding:20px 24px;border-right:1px solid var(--line)}.ticker h2{font:700 20px "Barlow Condensed";text-transform:uppercase;margin:0}.ticker small,.fuel small{display:block;font:500 10px "Barlow Condensed";letter-spacing:.13em;color:#929089;text-transform:uppercase}.ticker b{font:700 27px "Barlow Condensed"}.content{background:var(--paper);color:var(--ink)}.max{width:min(1320px,calc(100% - 48px));margin:auto}.manifesto{display:grid;grid-template-columns:.75fr 1.25fr;padding:110px 0;border-bottom:1px solid #bbb4a8}.manifesto h2,.articles h2{font:800 clamp(58px,8vw,120px)/.8 "Barlow Condensed";letter-spacing:-.035em;text-transform:uppercase;margin:0}.manifesto-intro{padding:10px 0 0 8vw}.manifesto-intro>p{font-size:23px;max-width:38ch;color:#514d46;margin-top:0}.paths{margin-top:50px}.path{display:grid;grid-template-columns:52px 1fr 25px;align-items:center;border-top:1px solid #bcb5aa;padding:18px 0;text-decoration:none}.path:last-child{border-bottom:1px solid #bcb5aa}.path span{font:600 12px "Barlow Condensed";color:var(--red)}.path strong{font:700 28px "Barlow Condensed";text-transform:uppercase}.path:hover{color:var(--red);padding-left:10px}.quiz{display:grid;grid-template-columns:1fr 1fr;background:var(--red);color:white}.quiz-copy{padding:90px max(28px,calc((100vw - 1320px)/2))}.quiz-copy h2{font:800 clamp(58px,7vw,100px)/.84 "Barlow Condensed";text-transform:uppercase;margin:15px 0 23px}.quiz-copy p{font-size:19px;max-width:35ch}.quiz-side{display:grid;place-items:center;border-left:1px solid rgba(255,255,255,.3);font:800 clamp(140px,30vw,470px)/1 "Barlow Condensed";overflow:hidden}.articles{padding:105px 0}.articles header{display:flex;justify-content:space-between;align-items:end;border-bottom:5px solid var(--ink);padding-bottom:22px}.articles header p{font:600 12px "Barlow Condensed";text-transform:uppercase;letter-spacing:.13em}.article-grid{display:grid;grid-template-columns:2fr repeat(2,1fr)}.article{min-height:310px;padding:28px;border-right:1px solid #bcb5aa;border-bottom:1px solid #bcb5aa;text-decoration:none;display:flex;flex-direction:column}.article:first-child{min-height:620px}.article:nth-child(3){border-right:0}.article:nth-child(4){grid-column:2}.article:nth-child(5){border-right:0}.article small{font:600 11px "Barlow Condensed";color:var(--red);text-transform:uppercase;letter-spacing:.12em}.article strong{font:600 30px/1.05 "Source Serif 4";margin-top:14px}.article:first-child strong{font-size:48px}.article i{margin-top:auto;font:600 12px "Barlow Condensed";font-style:normal;text-transform:uppercase}.article:hover{background:#e3ded5}.newsletter{background:var(--lime);color:#161613;padding:75px 0}.newsletter .max{display:grid;grid-template-columns:1fr 1fr;gap:7vw;align-items:end}.newsletter h2{font:800 66px/.85 "Barlow Condensed";text-transform:uppercase;margin:0}.newsletter p{font-size:18px}.newsletter form{display:flex;border-bottom:3px solid #111}.newsletter input{background:none;border:0;padding:16px 4px;font:18px "Source Serif 4";flex:1;min-width:0}.newsletter button{background:#111;color:white;border:0;padding:0 24px;font:700 12px "Barlow Condensed";text-transform:uppercase;cursor:pointer}footer{padding:36px 0;background:#111;font:500 12px "Barlow Condensed";text-transform:uppercase;letter-spacing:.07em}.foot{display:flex;gap:28px;align-items:center}.foot nav{margin-left:auto;display:flex;gap:20px}.foot a{text-decoration:none}a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #e26f42;outline-offset:3px}@media(max-width:900px){.chrome nav{display:none}.hero{min-height:700px}.rail{width:58vw}.manifesto{grid-template-columns:1fr;gap:50px}.manifesto-intro{padding-left:0}.article-grid{grid-template-columns:1fr 1fr}.article:first-child{grid-column:1/-1}.article:nth-child(4){grid-column:auto}.article:nth-child(even){border-right:0}.quiz-copy{padding:70px 28px}.newsletter .max{grid-template-columns:1fr}.foot{flex-wrap:wrap}.foot nav{width:100%;margin:0;flex-wrap:wrap}}@media(max-width:650px){.hero{height:auto;min-height:690px;background:#24231f}.engine iframe{display:none}.shade{display:none}.rail{width:auto;right:0;padding:120px 20px 35px}.rail h1{font-size:68px}.rail p{font-size:17px}.hint{display:none}.mobile-engine{display:block;margin-top:auto;background:#ece8e1;color:#111;padding:18px}.jump{display:none}.ticker{background:#111}.manifesto{padding:75px 0}.max{width:calc(100% - 30px)}.manifesto h2{font-size:72px}.path strong{font-size:23px}.quiz{grid-template-columns:1fr}.quiz-side{display:none}.article-grid{grid-template-columns:1fr}.article,.article:first-child{grid-column:auto;min-height:280px;border-right:0}.article strong,.article:first-child strong{font-size:31px}.newsletter h2{font-size:58px}.foot nav{gap:13px}.chrome{padding:0 16px}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
-</style></head><body><header class="chrome"><a class="brand" href="https://auto-repare.com/">AUTO<em>·</em>REPARE</a><nav><a href="#">Accueil</a><a href="#moteur">Moteur 3D</a><a href="https://auto-repare.com/quiz-technique/">Quiz</a><a href="https://auto-repare.com/mobilite-urbaine/">Mobilité urbaine</a><a href="https://auto-repare.com/assurance-auto-moto/">Assurance & sécurité</a><a href="https://auto-repare.com/depannage-pieces-detachees/">Dépannage / pièces</a><a href="https://auto-repare.com/technologies-vertes/">Technologies vertes</a><a href="https://auto-repare.com/contactez-nous/">Contact</a></nav><button class="lang">FR / EN</button></header><main><section class="hero" id="moteur"><div class="engine"><iframe title="Moteur automobile interactif en 3D" src="https://antho-352.github.io/auto-repare-moteur/?embed=1"></iframe></div><div class="shade"></div><div class="rail"><span class="eyebrow">L’expertise automobile à votre service</span><h1>Entrez dans le moteur.</h1><p>Conseils d’entretien, guides techniques et assistance pour tous les conducteurs. Commencez par la pièce, poursuivez par le diagnostic.</p><a class="cta" href="https://antho-352.github.io/auto-repare-moteur/">Explorer en plein écran →</a><div class="mobile-engine"><b>Le moteur 3D s’ouvre en plein écran sur mobile.</b></div><div class="hint">Faites tourner · Cliquez une pièce · Zoomez</div></div><div class="jump"><a href="#comprendre">Comprendre</a><a href="#articles">Lire</a></div></section><section class="ticker" aria-label="Prix des carburants"><div><small>Prix carburants · 11/09/2026</small><h2>France</h2><small>Source : data.economie.gouv.fr</small></div><div><small>Gazole / L</small><b>1,986 €</b></div><div><small>SP95 / L</small><b>1,831 €</b></div><div><small>SP98 / L</small><b>1,934 €</b></div><div><small>E85 / L</small><b>0,801 €</b></div></section><div class="content"><section class="manifesto max" id="comprendre"><h2>Voir.<br>Comprendre.<br>Décider.</h2><div class="manifesto-intro"><p>Plus de jargon opaque. Auto Repare organise l’information autour des questions que vous vous posez vraiment.</p><div class="paths"><a class="path" href="#articles"><span>01</span><strong>Entretien préventif</strong><b>↗</b></a><a class="path" href="https://auto-repare.com/assurance-auto-moto/"><span>02</span><strong>Démarches & protection</strong><b>↗</b></a><a class="path" href="#articles"><span>03</span><strong>Diagnostics précis</strong><b>↗</b></a><a class="path" href="#articles"><span>04</span><strong>Conseils fiables</strong><b>↗</b></a></div></div></section><section class="quiz"><div class="quiz-copy"><span class="eyebrow" style="color:#ffd2c0">Quiz technique</span><h2>Connaissez-vous vraiment votre moteur ?</h2><p>Testez vos connaissances en mécanique et découvrez si vous êtes un as du diagnostic ou un simple conducteur.</p><a class="cta" href="https://auto-repare.com/quiz-technique/">Faire le test →</a></div><div class="quiz-side" aria-hidden="true">?</div></section><section class="articles max" id="articles"><header><h2>À lire<br>maintenant.</h2><p>À la une + derniers articles</p></header><div class="article-grid"><a class="article" href="https://auto-repare.com/liquide-de-refroidissement-noir-causes-possibles-et-risques-pour-le-moteur/"><small>À la une · moteur</small><strong>Liquide de refroidissement noir : causes possibles et risques pour le moteur</strong><i>Lire le guide →</i></a><a class="article" href="https://auto-repare.com/fumee-noire-sur-diesel-diagnostic-rapide-avant-dabimer-turbo-et-fap/"><small>Diagnostic diesel</small><strong>Fumée noire : le diagnostic avant d’abîmer turbo et FAP</strong><i>Lire →</i></a><a class="article" href="https://auto-repare.com/voyant-tableau-de-bord-peugeot-208-interpreter-les-signaux-pour-mieux-conduire/"><small>Tableau de bord</small><strong>Voyant Peugeot 208 : interpréter les signaux</strong><i>Lire →</i></a><a class="article" href="https://auto-repare.com/effacement-code-defaut-impossible-causes-et-solutions-pratiques/"><small>Codes défaut</small><strong>Effacement impossible : causes et solutions</strong><i>Lire →</i></a><a class="article" href="https://auto-repare.com/bruit-de-tracteur-au-demarrage-les-causes-typiques-et-les-signes-qui-inquietent/"><small>Entretien</small><strong>Bruit de tracteur au démarrage : les signes</strong><i>Lire →</i></a></div></section></div><section class="newsletter"><div class="max"><div><h2>L’actualité mécanique, sans filtre.</h2><p>Conseils hebdomadaires, alertes fiabilité et guides d’entretien.</p></div><form onsubmit="event.preventDefault();this.querySelector('button').textContent='Inscrit'"><label hidden for="email-b">Email</label><input id="email-b" type="email" required placeholder="Votre adresse email"><button>S’inscrire</button></form></div></section></main><footer><div class="max foot"><a class="brand" href="#">AUTO·REPARE</a><span>© 2026</span><nav><a href="https://auto-repare.com/mentions-legales/">Mentions légales</a><a href="https://auto-repare.com/contactez-nous/">Contact</a><a href="https://auto-repare.com/plan-du-site/">Plan du site</a></nav></div></footer><script>document.querySelector('.lang').onclick=e=>e.target.textContent=e.target.textContent.includes('FR')?'EN / FR':'FR / EN';</script></body></html>
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Auto Repare — Le moteur est le site</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #121210;
+      --paper: #f0ede7;
+      --red: #c24a1c;
+      --red-deep: #8a2c16;
+      --cream: #ece8e1;
+      --lime: #d9dd93;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: "Source Serif 4", Georgia, serif;
+    }
+    a { color: inherit; }
+    button { font-family: inherit; }
+
+    .chrome {
+      height: 52px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 0 18px;
+      background: #0c0c0a;
+      border-bottom: 1px solid #2a2926;
+      font-family: "Barlow Condensed", sans-serif;
+      position: relative;
+      z-index: 5;
+    }
+    .brand {
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: 0.14em;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .brand em { color: var(--red); font-style: normal; }
+    .chrome h1 {
+      margin: 0;
+      font: 700 13px/1 "Barlow Condensed";
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #c9c3b8;
+      white-space: nowrap;
+    }
+    .chrome nav {
+      display: flex;
+      margin-left: auto;
+      gap: 16px;
+      overflow: auto;
+    }
+    .chrome nav a {
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .chrome nav a:hover { color: var(--red); }
+    .lang {
+      border: 1px solid #555;
+      background: transparent;
+      color: white;
+      padding: 6px 9px;
+      font: 600 11px "Barlow Condensed";
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .lang:focus-visible, .chrome nav a:focus-visible, .cta:focus-visible {
+      outline: 2px solid var(--lime);
+      outline-offset: 2px;
+    }
+
+    .hero {
+      height: calc(100svh - 52px);
+      min-height: 640px;
+      background: var(--cream);
+      position: relative;
+    }
+    .hero iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+    .scroll-cue {
+      position: absolute;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      z-index: 2;
+      font: 700 11px/1 "Barlow Condensed";
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink);
+      background: rgba(240, 237, 231, 0.88);
+      border: 1px solid #1d1c1a;
+      padding: 8px 12px;
+      text-decoration: none;
+      pointer-events: auto;
+    }
+    .mobile-engine { display: none; }
+
+    .marquee {
+      overflow: hidden;
+      border-top: 1px solid #2a2926;
+      border-bottom: 1px solid #2a2926;
+      background: var(--red-deep);
+      color: var(--cream);
+    }
+    .marquee .track {
+      display: flex;
+      width: max-content;
+      gap: 0;
+      animation: slide 28s linear infinite;
+    }
+    .marquee b, .marquee span {
+      font-family: "Barlow Condensed", sans-serif;
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 10px 22px;
+      white-space: nowrap;
+    }
+    .marquee span { color: var(--lime); }
+    @keyframes slide {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    .fuel {
+      display: grid;
+      grid-template-columns: 180px repeat(4, 1fr);
+      font-family: "Barlow Condensed", sans-serif;
+      border-bottom: 1px solid #2a2926;
+    }
+    .fuel div { padding: 18px 20px; border-left: 1px solid #2a2926; }
+    .fuel div:first-child { border-left: 0; }
+    .fuel small { display: block; letter-spacing: 0.12em; text-transform: uppercase; color: #8a857c; font-size: 11px; }
+    .fuel b { font-size: 34px; letter-spacing: -0.03em; }
+    .fuel .live {
+      background: var(--lime);
+      color: var(--ink);
+    }
+
+    .punch {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      min-height: 70vh;
+      border-bottom: 1px solid #2a2926;
+    }
+    .punch h2 {
+      margin: 0;
+      padding: 8vh 8vw 6vh;
+      font: 800 clamp(64px, 10vw, 128px)/0.78 "Barlow Condensed";
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+    }
+    .punch h2 em {
+      font-style: normal;
+      color: var(--red);
+      display: block;
+    }
+    .paths { display: flex; flex-direction: column; border-left: 1px solid #2a2926; }
+    .path {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 72px 1fr 40px;
+      align-items: center;
+      gap: 12px;
+      padding: 0 28px;
+      text-decoration: none;
+      border-bottom: 1px solid #2a2926;
+      font-family: "Barlow Condensed", sans-serif;
+      min-height: 92px;
+      transition: background 0.2s ease, color 0.2s ease, padding-left 0.25s ease;
+    }
+    .path:last-child { border-bottom: 0; }
+    .path:hover { background: var(--red); color: #fff; padding-left: 40px; }
+    .path span { font-size: 13px; letter-spacing: 0.14em; color: var(--red); }
+    .path:hover span { color: var(--lime); }
+    .path strong { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; text-transform: uppercase; }
+    .path b { font-size: 22px; }
+
+    .quiz {
+      display: grid;
+      grid-template-columns: 1.4fr 0.6fr;
+      background: var(--red);
+      color: #fffaf4;
+      min-height: 52vh;
+      overflow: hidden;
+    }
+    .quiz-copy { padding: 10vh 8vw; }
+    .quiz-copy .eyebrow {
+      font: 700 12px "Barlow Condensed";
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--lime);
+    }
+    .quiz h2 {
+      font: 800 clamp(42px, 6vw, 72px)/0.9 "Barlow Condensed";
+      text-transform: uppercase;
+      letter-spacing: -0.03em;
+      margin: 12px 0 18px;
+      max-width: 14ch;
+    }
+    .quiz p { font-size: 20px; max-width: 36ch; }
+    .cta {
+      display: inline-flex;
+      margin-top: 22px;
+      background: var(--ink);
+      color: var(--paper);
+      padding: 14px 18px;
+      text-decoration: none;
+      font: 800 13px "Barlow Condensed";
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .cta:hover { background: var(--lime); color: var(--ink); }
+    .quiz-mark {
+      display: grid;
+      place-items: center;
+      font: 800 42vw/0.7 "Barlow Condensed";
+      color: rgba(0,0,0,.18);
+      animation: idle 6s ease-in-out infinite;
+      user-select: none;
+    }
+    @keyframes idle {
+      0%, 100% { transform: rotate(-8deg) translateY(0); }
+      50% { transform: rotate(6deg) translateY(-12px); }
+    }
+
+    .articles { padding: 8vh 4vw 10vh; }
+    .articles header {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      margin-bottom: 28px;
+      gap: 20px;
+    }
+    .articles h2 {
+      margin: 0;
+      font: 800 clamp(48px, 7vw, 84px)/0.8 "Barlow Condensed";
+      text-transform: uppercase;
+      letter-spacing: -0.04em;
+    }
+    .articles header p { color: #8a857c; max-width: 28ch; }
+    .article-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 2px;
+      background: #2a2926;
+    }
+    .article {
+      background: #171715;
+      padding: 28px 24px 32px;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      min-height: 240px;
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+    .article:first-child { grid-row: span 2; min-height: 420px; }
+    .article:hover { background: var(--red-deep); transform: translateY(-6px); }
+    .article small {
+      font: 700 11px "Barlow Condensed";
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--red);
+    }
+    .article strong {
+      margin-top: 14px;
+      font-size: 28px;
+      line-height: 1.1;
+      font-weight: 600;
+    }
+    .article i { margin-top: auto; padding-top: 24px; font-style: normal; font-family: "Barlow Condensed", sans-serif; letter-spacing: 0.08em; text-transform: uppercase; }
+
+    .newsletter {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      background: var(--lime);
+      color: var(--ink);
+      padding: 8vh 6vw;
+      gap: 32px;
+      align-items: center;
+    }
+    .newsletter h2 {
+      margin: 0 0 10px;
+      font: 800 clamp(36px, 5vw, 64px)/0.85 "Barlow Condensed";
+      text-transform: uppercase;
+    }
+    form { display: flex; gap: 0; }
+    input[type="email"] {
+      flex: 1;
+      min-height: 52px;
+      border: 2px solid var(--ink);
+      background: transparent;
+      padding: 0 14px;
+      font: 16px "Source Serif 4", serif;
+    }
+    form button {
+      min-height: 52px;
+      border: 2px solid var(--ink);
+      border-left: 0;
+      background: var(--ink);
+      color: var(--lime);
+      padding: 0 18px;
+      font: 800 13px "Barlow Condensed";
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 22px 24px;
+      font-family: "Barlow Condensed", sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 13px;
+    }
+    footer nav { display: flex; gap: 16px; }
+
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.on { opacity: 1; transform: none; }
+
+    @media (max-width: 980px) {
+      .chrome h1, .chrome nav { display: none; }
+      .hero { min-height: 0; height: auto; }
+      .hero iframe { display: none; }
+      .scroll-cue { display: none; }
+      .mobile-engine {
+        display: block;
+        padding: 48px 22px;
+        background: var(--cream);
+        color: var(--ink);
+      }
+      .mobile-engine h2 {
+        font: 800 48px/0.85 "Barlow Condensed";
+        text-transform: uppercase;
+        margin: 0 0 12px;
+      }
+      .fuel { grid-template-columns: 1fr 1fr; }
+      .punch, .quiz, .newsletter, .article-grid { grid-template-columns: 1fr; }
+      .article:first-child { grid-row: auto; min-height: 240px; }
+      .quiz-mark { display: none; }
+      form { flex-direction: column; }
+      form button { border-left: 2px solid var(--ink); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .marquee .track, .quiz-mark { animation: none; }
+      .reveal { opacity: 1; transform: none; }
+      .path, .article { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="chrome">
+    <a class="brand" href="https://auto-repare.com/">AUTO<em>·</em>REPARE</a>
+    <h1>Entrez dans le moteur</h1>
+    <nav>
+      <a href="#moteur">Moteur 3D</a>
+      <a href="https://auto-repare.com/quiz-technique/">Quiz</a>
+      <a href="https://auto-repare.com/mobilite-urbaine/">Mobilité urbaine</a>
+      <a href="https://auto-repare.com/assurance-auto-moto/">Assurance</a>
+      <a href="https://auto-repare.com/depannage-pieces-detachees/">Dépannage</a>
+      <a href="https://auto-repare.com/technologies-vertes/">Technologies vertes</a>
+      <a href="https://auto-repare.com/contactez-nous/">Contact</a>
+    </nav>
+    <button class="lang" type="button">FR / EN</button>
+  </header>
+
+  <main>
+    <section class="hero" id="moteur">
+      <iframe title="Moteur automobile interactif en 3D" src="https://antho-352.github.io/auto-repare-moteur/?embed=1"></iframe>
+      <div class="mobile-engine">
+        <h2>Le moteur, pièce par pièce.</h2>
+        <p>Sur mobile, ouvrez le modèle en plein écran pour cliquer, éclater et couper.</p>
+        <a class="cta" href="https://antho-352.github.io/auto-repare-moteur/">Ouvrir le moteur →</a>
+      </div>
+      <a class="scroll-cue" href="#suite">Défiler le site ↓</a>
+    </section>
+
+    <div id="suite" class="marquee" aria-hidden="true">
+      <div class="track">
+        <b>Bloc</b><span>Pistons</span><b>Culasse</b><span>Courroie</span><b>Turbo</b><span>Bougies</span><b>Vilebrequin</b><span>Injecteurs</span><b>Alternateur</b><span>Thermostat</span>
+        <b>Bloc</b><span>Pistons</span><b>Culasse</b><span>Courroie</span><b>Turbo</b><span>Bougies</span><b>Vilebrequin</b><span>Injecteurs</span><b>Alternateur</b><span>Thermostat</span>
+      </div>
+    </div>
+
+    <section class="fuel" aria-label="Prix moyens des carburants">
+      <div class="live"><small>France · 11/09/2026</small><b>CARBU</b><small>data.economie.gouv.fr</small></div>
+      <div><small>Gazole / L</small><b>1,986 €</b></div>
+      <div><small>SP95 / L</small><b>1,831 €</b></div>
+      <div><small>SP98 / L</small><b>1,934 €</b></div>
+      <div><small>E85 / L</small><b>0,801 €</b></div>
+    </section>
+
+    <section class="punch reveal" id="comprendre">
+      <h2>Voir.<em>Comprendre.</em>Décider.</h2>
+      <div class="paths">
+        <a class="path" href="#articles"><span>01</span><strong>Entretien préventif</strong><b>↗</b></a>
+        <a class="path" href="https://auto-repare.com/assurance-auto-moto/"><span>02</span><strong>Démarches &amp; protection</strong><b>↗</b></a>
+        <a class="path" href="#articles"><span>03</span><strong>Diagnostics précis</strong><b>↗</b></a>
+        <a class="path" href="#articles"><span>04</span><strong>Conseils fiables</strong><b>↗</b></a>
+      </div>
+    </section>
+
+    <section class="quiz reveal">
+      <div class="quiz-copy">
+        <div class="eyebrow">Quiz technique</div>
+        <h2>Connaissez-vous vraiment votre moteur ?</h2>
+        <p>Testez vos connaissances en mécanique — as du diagnostic, ou simple conducteur.</p>
+        <a class="cta" href="https://auto-repare.com/quiz-technique/">Faire le test →</a>
+      </div>
+      <div class="quiz-mark" aria-hidden="true">?</div>
+    </section>
+
+    <section class="articles" id="articles">
+      <header class="reveal">
+        <h2>À lire<br>maintenant.</h2>
+        <p>À la une et derniers articles — le contenu actuel, pas des pages inventées.</p>
+      </header>
+      <div class="article-grid">
+        <a class="article reveal" href="https://auto-repare.com/liquide-de-refroidissement-noir-causes-possibles-et-risques-pour-le-moteur/">
+          <small>À la une · moteur</small>
+          <strong>Liquide de refroidissement noir : causes et risques</strong>
+          <i>Lire le guide →</i>
+        </a>
+        <a class="article reveal" href="https://auto-repare.com/fumee-noire-sur-diesel-diagnostic-rapide-avant-dabimer-turbo-et-fap/">
+          <small>Diesel</small>
+          <strong>Fumée noire : avant d’abîmer turbo et FAP</strong>
+          <i>Lire →</i>
+        </a>
+        <a class="article reveal" href="https://auto-repare.com/voyant-tableau-de-bord-peugeot-208-interpreter-les-signaux-pour-mieux-conduire/">
+          <small>Tableau de bord</small>
+          <strong>Voyant Peugeot 208 : lire les signaux</strong>
+          <i>Lire →</i>
+        </a>
+        <a class="article reveal" href="https://auto-repare.com/effacement-code-defaut-impossible-causes-et-solutions-pratiques/">
+          <small>Codes défaut</small>
+          <strong>Effacement impossible : causes et solutions</strong>
+          <i>Lire →</i>
+        </a>
+        <a class="article reveal" href="https://auto-repare.com/bruit-de-tracteur-au-demarrage-les-causes-typiques-et-les-signes-qui-inquietent/">
+          <small>Démarrage</small>
+          <strong>Bruit de tracteur au démarrage</strong>
+          <i>Lire →</i>
+        </a>
+      </div>
+    </section>
+
+    <section class="newsletter reveal">
+      <div>
+        <h2>L’actu mécanique, sans filtre.</h2>
+        <p>Conseils hebdo, alertes fiabilité, guides d’entretien.</p>
+      </div>
+      <form onsubmit="event.preventDefault(); this.querySelector('button').textContent='Inscrit';">
+        <label hidden for="email-b">Email</label>
+        <input id="email-b" type="email" required placeholder="Votre adresse email" />
+        <button type="submit">S’inscrire</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand" href="#">AUTO·REPARE</a>
+    <span>© 2026</span>
+    <nav>
+      <a href="https://auto-repare.com/mentions-legales/">Mentions légales</a>
+      <a href="https://auto-repare.com/contactez-nous/">Contact</a>
+      <a href="https://auto-repare.com/plan-du-site/">Plan du site</a>
+    </nav>
+  </footer>
+
+  <script>
+    document.querySelector(".lang").onclick = (e) => {
+      e.target.textContent = e.target.textContent.includes("FR") ? "EN / FR" : "FR / EN";
+    };
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((el) => { if (el.isIntersecting) el.target.classList.add("on"); });
+    }, { threshold: 0.16 });
+    document.querySelectorAll(".reveal").forEach((n) => io.observe(n));
+  </script>
+</body>
+</html>
