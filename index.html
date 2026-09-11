@@ -30,7 +30,8 @@
     html.embed .hint { display: none; }
     html.embed .controls { margin-left: 0; }
     @media (max-width: 980px) {
-      html.embed, html.embed body, html.embed .app { height: auto; min-height: 100%; }
+      html, body,
+      html.embed, html.embed body, html.embed .app { height: auto !important; min-height: 0; overflow: visible; }
       html.embed .card { overflow: visible; height: auto; }
     }
     html.focus-part .rail,
@@ -253,7 +254,16 @@
     }
     .label3d.on { border-color: var(--accent); color: var(--accent); }
     @media (max-width: 980px) {
-      .stage { grid-template-columns: 1fr; grid-template-rows: auto minmax(42vh, 1fr) auto; }
+      .app { height: auto !important; display: flex; flex-direction: column; }
+      .stage {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        min-height: 0;
+        grid-template-columns: none;
+        grid-template-rows: none;
+      }
+      #view { height: 52vh; min-height: 260px; flex: 0 0 52vh; }
       header { align-items: flex-start; }
       .controls { width: 100%; }
       .explode input { width: min(140px, 40vw); }
@@ -264,12 +274,21 @@
         padding: 8px;
         max-height: none;
         overflow: visible;
+        flex: 0 0 auto;
       }
       .rail h2,
       .group-label,
       .part { display: none !important; }
       #filter { width: calc(100% - 12px); margin: 0 6px; }
-      .card { border-left: 0; border-top: 1px solid var(--line); overflow: visible; height: auto; }
+      .card {
+        border-left: 0;
+        border-top: 1px solid var(--line);
+        overflow: visible !important;
+        height: auto !important;
+        min-height: 0 !important;
+        flex: 0 0 auto;
+        padding-bottom: 32px;
+      }
       .hint { display: none; }
     }
   </style>

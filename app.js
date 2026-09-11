@@ -24167,7 +24167,8 @@ void main() {
       });
       tick();
       function reportHeight() {
-        const h = Math.ceil(document.documentElement.scrollHeight || document.body.scrollHeight);
+        const el = document.querySelector(".app") || document.body;
+        const h = Math.ceil(el.getBoundingClientRect().height + 16);
         if (h > 0) parent.postMessage({ type: "engine-height", height: h }, "*");
       }
       if (document.documentElement.classList.contains("embed") || new URLSearchParams(location.search).has("embed")) {
