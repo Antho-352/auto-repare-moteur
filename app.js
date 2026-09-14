@@ -24176,13 +24176,17 @@ void main() {
         }
       });
       tick();
+      let lastReportedHeight = 0;
       function reportHeight() {
+        if (!window.matchMedia("(max-width: 980px)").matches) return;
         const el = document.querySelector(".app") || document.body;
-        const h = Math.ceil(el.getBoundingClientRect().height + 16);
-        if (h > 0) parent.postMessage({ type: "engine-height", height: h }, "*");
+        const h = Math.ceil(el.getBoundingClientRect().height);
+        if (!h || Math.abs(h - lastReportedHeight) < 2) return;
+        lastReportedHeight = h;
+        parent.postMessage({ type: "engine-height", height: h }, "*");
       }
       if (document.documentElement.classList.contains("embed") || new URLSearchParams(location.search).has("embed")) {
-        new ResizeObserver(reportHeight).observe(document.documentElement);
+        new ResizeObserver(reportHeight).observe(document.querySelector(".app") || document.body);
         window.addEventListener("load", reportHeight);
         setTimeout(reportHeight, 400);
         setTimeout(reportHeight, 1200);
